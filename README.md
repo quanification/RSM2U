@@ -1,11 +1,6 @@
-# RSM2U
+# RSM2U Waitlist Form
 
-This is the personal delivery website for RSM2U.
+This HTML form collects waitlist requests and sends them to a Google Sheet via webhook.
 
-### How to Use
-
-- Upload these files to a GitHub repository.
-- Connect the repository to Netlify.
-- Enable Netlify Forms if you'd like to receive form submissions directly.
-
-Edit `index.html` to update content.
+- Be sure to replace `https://YOUR_GOOGLE_SCRIPT_URL_HERE` in `waitlist.html` with your real script URL.
+- Deploy the Apps Script as a Web App with access set to "Anyone".
