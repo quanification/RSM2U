@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - RSM2U</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.auth0.com/js/auth0-spa-js/1.13/auth0-spa-js.production.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Login to RSM2U</h1>
+  </header>
+
+  <main>
+    <p>Please log in to access your members-only page.</p>
+    <button id="login">Log In</button>
+  </main>
+
+  <script>
+    let auth0 = null;
+
+    const configureClient = async () => {
+      auth0 = await createAuth0Client({
+        domain: "dev-snnjvf62qw1438rq.us.auth0.com",
+        client_id: "LetLfQ5N9xxeSu8mA6WpZkI9TeBZV7xM",
+        redirect_uri: window.location.origin + "/members.html"
+      });
+    };
+
+    window.onload = async () => {
+      await configureClient();
+      document.getElementById("login").addEventListener("click", () => auth0.loginWithRedirect());
+    };
+  </script>
+</body>
+</html>
