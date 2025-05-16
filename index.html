@@ -7,16 +7,30 @@
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <header class="hero">
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<script>
+  if (window.netlifyIdentity) {
+    netlifyIdentity.on("init", user => {
+      if (!user) {
+        netlifyIdentity.on("login", () => {
+          document.location.href = "/members.html";
+        });
+      }
+    });
+    netlifyIdentity.init();
+  }
+</script>
+<header class="hero">
         <h1>RSM2U</h1>
-        <p>Support Local Rancho Santa Margarita Restaurants and Drivers with RSM2U</p>
+        <p>Local, Affordable Delivery for Groceries and Restaurants in South Orange County</p>
         <a href="how-it-works.html" class="button">How It Works</a>
+    <a href="#" class="button" onclick="netlifyIdentity.open()">Login</a>
     </header>
 
     <main>
         <section>
             <h2>What We Do</h2>
-            <p>RSM2U is your personal delivery service for restaurant and essential pickups. We pick up on your behalf and deliver directly to your doorstep—without the high fees of national apps.</p>
+            <p>RSM2U is your personal delivery service for grocery, restaurant, and essential pickups. We shop or pick up on your behalf and deliver directly to your doorstep—without the high fees of national apps.</p>
         </section>
 
         <section>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Members Area - RSM2U</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Welcome to the Members Area</h1>
+    <nav>
+      <a href="index.html">Home</a> |
+      <a href="#" onclick="netlifyIdentity.logout()">Log out</a>
+    </nav>
+  </header>
+
+  <main>
+    <p>This page is visible only to invited, logged-in users. You can use this area to show delivery history, exclusive offers, or manage requests.</p>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 RSM2U. All rights reserved.</p>
+  </footer>
+
+  <script>
+    if (!window.netlifyIdentity) {
+      console.error("Netlify Identity widget not found.");
+    }
+
+    netlifyIdentity.on("init", user => {
+      if (!user) {
+        window.location.href = "index.html";
+      }
+    });
+
+    netlifyIdentity.init();
+  </script>
+</body>
+</html>
