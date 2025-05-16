@@ -1,6 +1,8 @@
-# RSM2U Waitlist Form
+# RSM2U Waitlist Form (Formspree)
 
-This HTML form collects waitlist requests and sends them to a Google Sheet via webhook.
+This HTML form sends waitlist submissions to Formspree (no CORS issues). 
 
-- Be sure to replace `https://YOUR_GOOGLE_SCRIPT_URL_HERE` in `waitlist.html` with your real script URL.
-- Deploy the Apps Script as a Web App with access set to "Anyone".
+## Steps:
+1. Sign up at https://formspree.io and create a form.
+2. Replace `YOUR_FORM_ID` in `waitlist.html` with your real Form ID.
+3. Deploy to GitHub → Netlify.

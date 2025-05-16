@@ -11,7 +11,7 @@
     <h1>Join the RSM2U Waitlist</h1>
     <p>Due to our limited number of drivers currently, we can only handle so much volume. Please fill out the form below to join the waitlist. We’ll contact you with access to the delivery platform as we continue to grow. Thanks for your understanding and we look forward to servicing you!</p>
 
-    <form id="waitlist-form">
+    <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
       <label for="name">Full Name</label>
       <input type="text" id="name" name="name" required />
 
@@ -25,41 +25,7 @@
       <input type="text" id="address" name="address" required />
 
       <button type="submit">Join Waitlist</button>
-      <p id="response" style="margin-top: 1em;"></p>
     </form>
   </main>
-
-  <script>
-    document.getElementById("waitlist-form").addEventListener("submit", async function(e) {
-      e.preventDefault();
-      const form = e.target;
-      const data = {
-        name: form.name.value,
-        email: form.email.value,
-        phone: form.phone.value,
-        address: form.address.value,
-      };
-
-      const responseEl = document.getElementById("response");
-      responseEl.textContent = "Submitting...";
-
-      try {
-        const res = await fetch("https://script.google.com/macros/s/AKfycbydW89BEGAMShfzDHcO2VsLHPfPHfOBahBiXcmTakx7pqDH_i1uyshq_dhNCuSQX2Dq/exec", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data)
-        });
-
-        if (res.ok) {
-          responseEl.textContent = "✅ You're on the list! We'll reach out if you're selected.";
-          form.reset();
-        } else {
-          responseEl.textContent = "❌ There was a problem submitting the form.";
-        }
-      } catch (err) {
-        responseEl.textContent = "⚠️ Network error. Please try again later.";
-      }
-    });
-  </script>
 </body>
 </html>
