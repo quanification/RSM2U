@@ -1,0 +1,52 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+header, footer {
+    background: #333;
+    color: #fff;
+    text-align: center;
+    padding: 1em 0;
+}
+
+main {
+    padding: 1em;
+    max-width: 800px;
+    margin: auto;
+}
+
+h1, h2 {
+    color: #333;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 1em;
+}
+
+input, textarea {
+    padding: 0.5em;
+    width: 100%;
+    max-width: 100%;
+}
+
+button {
+    background: #333;
+    color: white;
+    border: none;
+    padding: 0.7em;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #555;
+}
