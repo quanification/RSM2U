@@ -44,7 +44,7 @@
       responseEl.textContent = "Submitting...";
 
       try {
-        const res = await fetch("https://YOUR_GOOGLE_SCRIPT_URL_HERE", {
+        const res = await fetch("https://script.google.com/macros/s/AKfycbztSh3sar8-yn-oZN8eKRhAu4dAK5porWB2II7McYrRDICSOhnrX9lCinEN7kXC6Ogv/exec", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data)
