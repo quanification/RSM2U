@@ -29,18 +29,20 @@
           scope: 'openid email user_metadata'
         }
       },
-      additionalSignUpFields: [
-        {
-          name: "inviteCode",
-          placeholder: "Enter your invite code",
-          validator: function(code) {
-            return {
-              valid: code && code.length >= 6,
-              hint: "Invite code must be at least 6 characters"
-            };
-          }
-        }
-      ],
+     additionalSignUpFields: [
+  {
+    name: "inviteCode",
+    placeholder: "Enter your invite code",
+    prefill: "",
+    validator: function(code) {
+      return {
+        valid: code && code.length >= 6,
+        hint: "Invite code must be at least 6 characters"
+      };
+    }
+  }
+]
+,
       theme: {
         primaryColor: "#4CAF50"
       },
