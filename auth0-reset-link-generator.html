@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Generate Auth0 Password Reset Link</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 600px;
+      margin: 2em auto;
+    }
+    input, textarea, button {
+      width: 100%;
+      padding: 0.75em;
+      margin-bottom: 1em;
+    }
+    #output {
+      white-space: pre-wrap;
+      background: #f5f5f5;
+      padding: 1em;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔐 Auth0 Reset Link Generator</h1>
+  <p>Paste your Auth0 API token and user ID below to generate a password reset link.</p>
+
+  <label>Auth0 API Token</label>
+  <textarea id="token" rows="5" placeholder="Paste your Management API token here..."></textarea>
+
+  <label>User ID (e.g. auth0|abc123...)</label>
+  <input type="text" id="userId" placeholder="auth0|..." />
+
+  <label>Tenant Domain</label>
+  <input type="text" id="domain" placeholder="e.g. dev-xxxxx.us.auth0.com" />
+
+  <label>Redirect URL after reset</label>
+  <input type="text" id="resultUrl" value="https://rsm2u.netlify.app/members.html" />
+
+  <button onclick="generate()">Generate Reset Link</button>
+
+  <h3>Result</h3>
+  <div id="output">Waiting for input...</div>
+
+  <script>
+    async function generate() {
+      const token = document.getElementById("token").value.trim();
+      const userId = document.getElementById("userId").value.trim();
+      const domain = document.getElementById("domain").value.trim();
+      const resultUrl = document.getElementById("resultUrl").value.trim();
+      const output = document.getElementById("output");
+
+      if (!token || !userId || !domain) {
+        output.textContent = "❌ Missing required fields.";
+        return;
+      }
+
+      output.textContent = "⏳ Generating reset link...";
+
+      try {
+        const res = await fetch(`https://${domain}/api/v2/tickets/password-change`, {
+          method: "POST",
+          headers: {
+            "Authorization": "Bearer " + token,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            user_id: userId,
+            result_url: https://rsm2u.netlify.app/
+          })
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.ticket) {
+          output.innerHTML = `✅ Reset link generated:<br><a href="${data.ticket}" target="_blank">${data.ticket}</a>`;
+        } else {
+          output.textContent = "❌ Error: " + JSON.stringify(data, null, 2);
+        }
+      } catch (err) {
+        output.textContent = "❌ Network or API error: " + err.message;
+      }
+    }
+  </script>
+</body>
+</html>
