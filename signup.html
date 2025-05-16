@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>RSM2U Signup</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <script src="https://cdn.auth0.com/js/lock/11.30/lock.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Create Your RSM2U Account</h1>
+  </header>
+
+  <main>
+    <div id="signup-container"></div>
+    <p style="max-width: 600px; margin: 1em auto; text-align: center;">
+      Note: You'll need a valid one-time invite code to complete registration.
+    </p>
+  </main>
+
+  <script>
+    const lock = new Auth0Lock('LetLfQ5N9xxeSu8mA6WpZkI9TeBZV7xM', 'dev-snnjvf62qw1438rq.us.auth0.com', {
+      initialScreen: 'signUp',
+      auth: {
+        redirectUrl: window.location.origin + '/members.html',
+        responseType: 'token id_token',
+        params: {
+          scope: 'openid email user_metadata'
+        }
+      },
+      additionalSignUpFields: [
+        {
+          name: "inviteCode",
+          placeholder: "Enter your invite code",
+          validator: function(code) {
+            return {
+              valid: code && code.length >= 6,
+              hint: "Invite code must be at least 6 characters"
+            };
+          }
+        }
+      ],
+      theme: {
+        primaryColor: "#4CAF50"
+      },
+      languageDictionary: {
+        title: "RSM2U Signup"
+      }
+    });
+
+    lock.show();
+  </script>
+</body>
+</html>
