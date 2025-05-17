@@ -29,7 +29,7 @@ exports.handler = async function(event) {
       ],
       mode: "payment",
       success_url: "https://rsm2u.netlify.app/success.html",
-      cancel_url: "https://rsm2u.netlify.app/review.html",
+      cancel_url: 'https://rsm2u.netlify.app/cancel.html',
     });
 
     return {
