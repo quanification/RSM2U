@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,18 +18,21 @@
 <body>
   <main>
     <h1>📦 Place Your Delivery Request</h1>
-    <p>Upload a screenshot of your order, search for the restaurant, and input the total. We’ll calculate your tip and delivery fee.</p>
+    <p>Upload a screenshot of your order, search for the restaurant, and enter your order total. We'll calculate your delivery fee and show everything for confirmation before payment.</p>
 
     <form id="order-form">
+      <label for="email">Email Address</label>
+      <input type="email" id="email" name="email" placeholder="Used to find your delivery address" required />
+
       <label for="screenshot">Upload Order Screenshot</label>
       <input type="file" id="screenshot" name="screenshot" accept="image/*" required />
-      <img id="screenshot-preview" alt="Order Screenshot Preview" />
+      <img id="screenshot-preview" alt="Screenshot Preview" />
 
       <label for="restaurant">Search for Restaurant</label>
-      <input id="restaurant" type="text" placeholder="Search for a restaurant in RSM" required />
+      <input id="restaurant" type="text" placeholder="e.g. Chipotle, Trader Joe's" required />
 
       <label for="orderTotal">Order Total ($)</label>
-      <input type="number" step="0.01" id="orderTotal" name="orderTotal" placeholder="e.g. 25.00" required />
+      <input type="number" step="0.01" id="orderTotal" name="orderTotal" required />
 
       <fieldset>
         <legend>Tip Amount</legend>
@@ -46,10 +50,11 @@
 
     <div id="confirmation" style="display:none; margin-top: 2em;">
       <h2>Review Your Delivery Request</h2>
-      <p><strong>Pickup:</strong> <span id="confirm-restaurant"></span></p>
+      <p><strong>Email:</strong> <span id="confirm-email"></span></p>
+      <p><strong>Restaurant:</strong> <span id="confirm-restaurant"></span></p>
       <p><strong>Order Total:</strong> $<span id="confirm-order"></span></p>
       <p><strong>Tip:</strong> $<span id="confirm-tip"></span></p>
-      <p><strong>Delivery Fee:</strong> $<span id="confirm-fee">(to be calculated)</span></p>
+      <p><strong>Delivery Fee:</strong> $<span id="confirm-fee">(calculating...)</span></p>
       <p><strong>Total:</strong> $<span id="confirm-total"></span></p>
       <button id="submit-payment">Submit & Pay</button>
     </div>
@@ -76,12 +81,14 @@
       }
     });
 
-    document.getElementById("order-form").addEventListener("submit", function(e) {
+    document.getElementById("order-form").addEventListener("submit", async function(e) {
       e.preventDefault();
 
-      const orderTotal = parseFloat(document.getElementById("orderTotal").value);
-      const restaurant = document.getElementById("restaurant").value;
-      const selectedTip = document.querySelector("input[name='tipOption']:checked");
+      const form = e.target;
+      const email = form.email.value;
+      const restaurant = form.restaurant.value;
+      const orderTotal = parseFloat(form.orderTotal.value);
+      const selectedTip = form.querySelector("input[name='tipOption']:checked");
 
       let tip = 0;
       if (selectedTip) {
@@ -92,9 +99,36 @@
         }
       }
 
-      const deliveryFee = 5.99;
+      // Placeholder address for now
+      const customerAddress = "10 Via Terrano, Rancho Santa Margarita, CA";
+
+      let deliveryFee = 0;
+
+      try {
+        const res = await fetch("/.netlify/functions/calculateFee", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            restaurantAddress: restaurant,
+            customerAddress: customerAddress
+          })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          deliveryFee = parseFloat(data.fee);
+        } else {
+          alert("Error calculating delivery fee: " + data.error);
+          return;
+        }
+      } catch (err) {
+        alert("Network error: " + err.message);
+        return;
+      }
+
       const total = orderTotal + tip + deliveryFee;
 
+      document.getElementById("confirm-email").textContent = email;
       document.getElementById("confirm-restaurant").textContent = restaurant;
       document.getElementById("confirm-order").textContent = orderTotal.toFixed(2);
       document.getElementById("confirm-tip").textContent = tip.toFixed(2);
@@ -105,7 +139,7 @@
     });
 
     document.getElementById("submit-payment").addEventListener("click", () => {
-      alert("✅ Order submitted successfully! (next: integrate Stripe)");
+      alert("✅ Order submitted! (Payment integration coming next)");
     });
   </script>
 
@@ -113,7 +147,6 @@
   <script>
     function initAutocomplete() {
       const input = document.getElementById("restaurant");
-
       const RSM_BOUNDS = new google.maps.LatLngBounds(
         { lat: 33.6100, lng: -117.6380 },
         { lat: 33.6700, lng: -117.5650 }
@@ -126,17 +159,10 @@
       });
 
       autocomplete.setBounds(RSM_BOUNDS);
-
       autocomplete.addListener("place_changed", () => {
         const place = autocomplete.getPlace();
-
-        if (!place.geometry || !place.geometry.location) {
-          alert("Please select a valid location.");
-          return;
-        }
-
         if (!RSM_BOUNDS.contains(place.geometry.location)) {
-          alert("❌ Sorry, we currently only serve restaurants in Rancho Santa Margarita.");
+          alert("❌ Restaurant must be in Rancho Santa Margarita.");
           input.value = "";
         }
       });
