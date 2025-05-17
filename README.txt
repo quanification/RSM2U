@@ -1,0 +1,1 @@
+This is a starter structure for setting up Netlify Functions in your GitHub repo.
