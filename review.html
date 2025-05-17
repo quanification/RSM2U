@@ -15,7 +15,7 @@
     <p><strong>Tip:</strong> $<span id="tip"></span></p>
     <p><strong>Delivery Fee:</strong> $<span id="deliveryFee">Calculating...</span></p>
     <p><strong>Total:</strong> $<span id="total"></span></p>
-    <button onclick="alert('✅ Order submitted! (Integrate payment here)')">Submit & Pay</button>
+    <button id="checkout-button">Submit & Pay</button>
   </main>
 
   <script>
@@ -37,6 +37,11 @@
         if (res.ok) {
           const deliveryFee = parseFloat(result.fee);
           const total = deliveryFee + data.tip;
+
+          data.deliveryFee = deliveryFee;
+          data.total = total;
+
+          localStorage.setItem("rsm2u_order", JSON.stringify(data)); // Save updated data
 
           document.getElementById("deliveryFee").textContent = deliveryFee.toFixed(2);
           document.getElementById("total").textContent = total.toFixed(2);
@@ -65,6 +70,26 @@
 
       fetchFee();
     }
+
+    document.getElementById("checkout-button").addEventListener("click", async () => {
+      const res = await fetch("/.netlify/functions/createCheckoutSession", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: data.email,
+          restaurant: data.restaurant,
+          deliveryFee: data.deliveryFee,
+          tip: data.tip
+        }),
+      });
+
+      const result = await res.json();
+      if (res.ok && result.url) {
+        window.location.href = result.url;
+      } else {
+        alert("❌ Failed to start checkout: " + result.error);
+      }
+    });
   </script>
 </body>
 </html>
