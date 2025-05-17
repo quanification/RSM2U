@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Review Delivery Request</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <main>
+    <h2>Review Your Delivery Request</h2>
+    <p><strong>Email:</strong> <span id="email"></span></p>
+    <p><strong>Restaurant:</strong> <span id="restaurant"></span></p>
+    <p><strong>Order Total:</strong> $<span id="orderTotal"></span></p>
+    <p><strong>Tip:</strong> $<span id="tip"></span></p>
+    <p><strong>Delivery Fee:</strong> $<span id="deliveryFee"></span></p>
+    <p><strong>Total:</strong> $<span id="total"></span></p>
+    <button onclick="alert('✅ Order submitted! (Integrate payment here)')">Submit & Pay</button>
+  </main>
+
+  <script>
+    const data = JSON.parse(localStorage.getItem("rsm2u_order"));
+    if (data) {
+      document.getElementById("email").textContent = data.email;
+      document.getElementById("restaurant").textContent = data.restaurant;
+      document.getElementById("orderTotal").textContent = data.orderTotal.toFixed(2);
+      document.getElementById("tip").textContent = data.tip.toFixed(2);
+      document.getElementById("deliveryFee").textContent = data.deliveryFee.toFixed(2);
+      document.getElementById("total").textContent = data.total.toFixed(2);
+    }
+  </script>
+</body>
+</html>
