@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Review Delivery Request</title>
   <link rel="stylesheet" href="style.css"/>
@@ -15,12 +15,12 @@
     <p><strong>Tip:</strong> $<span id="tip"></span></p>
     <p><strong>Delivery Fee:</strong> $<span id="deliveryFee">Calculating...</span></p>
     <p><strong>Total:</strong> $<span id="total"></span></p>
-    <button id="checkout-button">Submit & Pay</button>
+    <button id="payBtn">Submit & Pay</button>
   </main>
 
   <script>
     const data = JSON.parse(localStorage.getItem("rsm2u_order"));
-    const customerAddress = "10 Via Terrano, Rancho Santa Margarita, CA"; // Replace with real lookup later
+    const customerAddress = "10 Via Terrano, Rancho Santa Margarita, CA"; // Later: pull from actual DB
 
     async function fetchFee() {
       try {
@@ -29,7 +29,7 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             restaurantAddress: data.restaurant,
-            customerAddress: customerAddress
+            customerAddress
           })
         });
 
@@ -41,19 +41,17 @@
           data.deliveryFee = deliveryFee;
           data.total = total;
 
-          localStorage.setItem("rsm2u_order", JSON.stringify(data)); // Save updated data
+          localStorage.setItem("rsm2u_order", JSON.stringify(data));
 
           document.getElementById("deliveryFee").textContent = deliveryFee.toFixed(2);
           document.getElementById("total").textContent = total.toFixed(2);
         } else {
-          document.getElementById("deliveryFee").textContent = "Error";
-          document.getElementById("total").textContent = "N/A";
-          alert("❌ Error calculating delivery fee: " + result.error);
+          throw new Error(result.error);
         }
       } catch (err) {
         document.getElementById("deliveryFee").textContent = "Error";
         document.getElementById("total").textContent = "N/A";
-        alert("❌ Network error calculating fee.");
+        alert("❌ Error calculating delivery fee: " + err.message);
       }
     }
 
@@ -62,32 +60,28 @@
       document.getElementById("restaurant").textContent = data.restaurant;
       document.getElementById("orderTotal").textContent = data.orderTotal.toFixed(2);
       document.getElementById("tip").textContent = data.tip.toFixed(2);
-
-      console.log("Sending to calculateFee.js:", {
-        restaurantAddress: data.restaurant,
-        customerAddress: customerAddress
-      });
-
       fetchFee();
     }
 
-    document.getElementById("checkout-button").addEventListener("click", async () => {
-      const res = await fetch("/.netlify/functions/createCheckoutSession", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: data.email,
-          restaurant: data.restaurant,
-          deliveryFee: data.deliveryFee,
-          tip: data.tip
-        }),
-      });
+    document.getElementById("payBtn").addEventListener("click", async () => {
+      try {
+        const response = await fetch("/.netlify/functions/createCheckoutSession", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: data.email,
+            amount: Math.round(data.total * 100) // Stripe uses cents
+          })
+        });
 
-      const result = await res.json();
-      if (res.ok && result.url) {
-        window.location.href = result.url;
-      } else {
-        alert("❌ Failed to start checkout: " + result.error);
+        const session = await response.json();
+        if (session.url) {
+          window.location.href = session.url; // Redirect to Stripe Checkout
+        } else {
+          throw new Error("No URL returned from Stripe.");
+        }
+      } catch (err) {
+        alert("❌ Error redirecting to Stripe: " + err.message);
       }
     });
   </script>
