@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Confirm Your Delivery</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main>
+    <h1>Review & Confirm</h1>
+    <div id="summary">
+      <p><strong>Email:</strong> <span id="email"></span></p>
+      <p><strong>Restaurant:</strong> <span id="restaurant"></span></p>
+      <p><strong>Order Total:</strong> $<span id="orderTotal"></span></p>
+      <p><strong>Tip:</strong> $<span id="tip"></span></p>
+      <p><strong>Delivery Fee:</strong> $<span id="fee"></span></p>
+      <p><strong>Total:</strong> $<span id="total"></span></p>
+    </div>
+    <button onclick="confirmPayment()">Confirm & Pay</button>
+  </main>
+
+  <script>
+    const data = JSON.parse(sessionStorage.getItem("orderData") || "{}");
+
+    document.getElementById("email").textContent = data.email;
+    document.getElementById("restaurant").textContent = data.restaurant;
+    document.getElementById("orderTotal").textContent = data.orderTotal.toFixed(2);
+    document.getElementById("tip").textContent = data.tip.toFixed(2);
+    document.getElementById("fee").textContent = data.fee.toFixed(2);
+    document.getElementById("total").textContent = (data.orderTotal + data.tip + data.fee).toFixed(2);
+
+    function confirmPayment() {
+      alert("✅ Payment flow will go here next!");
+      // Redirect to thank-you.html or integrate Stripe next
+    }
+  </script>
+</body>
+</html>

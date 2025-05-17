@@ -1,38 +1,23 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>RSM2U - Place Your Delivery Request</title>
   <link rel="stylesheet" href="style.css" />
-  <style>
-    #screenshot-preview {
-      display: none;
-      max-width: 100%;
-      margin-top: 1em;
-      border: 1px solid #ccc;
-    }
-  </style>
 </head>
 <body>
   <main>
     <h1>📦 Place Your Delivery Request</h1>
-    <p>Upload a screenshot of your order, search for the restaurant, and enter your order total. We'll calculate your delivery fee and show everything for confirmation before payment.</p>
-
     <form id="order-form">
-      <label for="email">Email Address</label>
-      <input type="email" id="email" name="email" placeholder="Used to find your delivery address" required />
+      <label>Email Address</label>
+      <input type="email" id="email" required />
 
-      <label for="screenshot">Upload Order Screenshot</label>
-      <input type="file" id="screenshot" name="screenshot" accept="image/*" required />
-      <img id="screenshot-preview" alt="Screenshot Preview" />
+      <label>Restaurant Name</label>
+      <input type="text" id="restaurant" required />
 
-      <label for="restaurant">Search for Restaurant</label>
-      <input id="restaurant" type="text" placeholder="e.g. Chipotle, Trader Joe's" required />
-
-      <label for="orderTotal">Order Total ($)</label>
-      <input type="number" step="0.01" id="orderTotal" name="orderTotal" required />
+      <label>Order Total ($)</label>
+      <input type="number" step="0.01" id="orderTotal" required />
 
       <fieldset>
         <legend>Tip Amount</legend>
@@ -41,132 +26,67 @@
         <label><input type="radio" name="tipOption" value="0.2" /> 20%</label>
         <label>
           <input type="radio" name="tipOption" value="custom" id="customTipRadio" />
-          Custom Tip: <input type="number" step="0.01" id="customTip" name="customTip" placeholder="Enter $ amount" disabled />
+          Custom: <input type="number" step="0.01" id="customTip" disabled />
         </label>
       </fieldset>
 
-      <button type="submit">Continue</button>
+      <button type="submit">Review Order</button>
     </form>
-
-    <div id="confirmation" style="display:none; margin-top: 2em;">
-      <h2>Review Your Delivery Request</h2>
-      <p><strong>Email:</strong> <span id="confirm-email"></span></p>
-      <p><strong>Restaurant:</strong> <span id="confirm-restaurant"></span></p>
-      <p><strong>Order Total:</strong> $<span id="confirm-order"></span></p>
-      <p><strong>Tip:</strong> $<span id="confirm-tip"></span></p>
-      <p><strong>Delivery Fee:</strong> $<span id="confirm-fee">(calculating...)</span></p>
-      <p><strong>Total:</strong> $<span id="confirm-total"></span></p>
-      <button id="submit-payment">Submit & Pay</button>
-    </div>
   </main>
 
   <script>
-    const customTipInput = document.getElementById("customTip");
-    document.getElementsByName("tipOption").forEach((tip) => {
-      tip.addEventListener("change", () => {
-        customTipInput.disabled = tip.value !== "custom";
+    document.getElementsByName("tipOption").forEach(radio => {
+      radio.addEventListener("change", () => {
+        document.getElementById("customTip").disabled = radio.value !== "custom";
       });
-    });
-
-    document.getElementById("screenshot").addEventListener("change", function () {
-      const file = this.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          const img = document.getElementById("screenshot-preview");
-          img.src = e.target.result;
-          img.style.display = "block";
-        };
-        reader.readAsDataURL(file);
-      }
     });
 
     document.getElementById("order-form").addEventListener("submit", async function(e) {
       e.preventDefault();
 
-      const form = e.target;
-      const email = form.email.value;
-      const restaurant = form.restaurant.value;
-      const orderTotal = parseFloat(form.orderTotal.value);
-      const selectedTip = form.querySelector("input[name='tipOption']:checked");
-
+      const email = document.getElementById("email").value;
+      const restaurant = document.getElementById("restaurant").value;
+      const orderTotal = parseFloat(document.getElementById("orderTotal").value);
+      const tipOption = document.querySelector("input[name='tipOption']:checked");
       let tip = 0;
-      if (selectedTip) {
-        if (selectedTip.value === "custom") {
-          tip = parseFloat(customTipInput.value);
-        } else {
-          tip = orderTotal * parseFloat(selectedTip.value);
-        }
+
+      if (tipOption) {
+        tip = tipOption.value === "custom"
+          ? parseFloat(document.getElementById("customTip").value)
+          : orderTotal * parseFloat(tipOption.value);
       }
 
-      // Placeholder address for now
+      // TEMP address for demo; replace with address from Formspree DB
       const customerAddress = "10 Via Terrano, Rancho Santa Margarita, CA";
 
-      let deliveryFee = 0;
-
+      let fee = 0;
       try {
         const res = await fetch("/.netlify/functions/calculateFee", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             restaurantAddress: restaurant,
-            customerAddress: customerAddress
+            customerAddress
           })
         });
-
         const data = await res.json();
         if (res.ok) {
-          deliveryFee = parseFloat(data.fee);
+          fee = parseFloat(data.fee);
         } else {
           alert("Error calculating delivery fee: " + data.error);
           return;
         }
       } catch (err) {
-        alert("Network error: " + err.message);
+        alert("Failed to calculate delivery fee.");
         return;
       }
 
-      const total = orderTotal + tip + deliveryFee;
+      sessionStorage.setItem("orderData", JSON.stringify({
+        email, restaurant, orderTotal, tip, fee
+      }));
 
-      document.getElementById("confirm-email").textContent = email;
-      document.getElementById("confirm-restaurant").textContent = restaurant;
-      document.getElementById("confirm-order").textContent = orderTotal.toFixed(2);
-      document.getElementById("confirm-tip").textContent = tip.toFixed(2);
-      document.getElementById("confirm-fee").textContent = deliveryFee.toFixed(2);
-      document.getElementById("confirm-total").textContent = total.toFixed(2);
-
-      document.getElementById("confirmation").style.display = "block";
+      window.location.href = "confirm.html";
     });
-
-    document.getElementById("submit-payment").addEventListener("click", () => {
-      alert("✅ Order submitted! (Payment integration coming next)");
-    });
-  </script>
-
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDcIVNQtUTKU6LBmeF8b71473V_mkieoOw&libraries=places&callback=initAutocomplete" async defer></script>
-  <script>
-    function initAutocomplete() {
-      const input = document.getElementById("restaurant");
-      const RSM_BOUNDS = new google.maps.LatLngBounds(
-        { lat: 33.6100, lng: -117.6380 },
-        { lat: 33.6700, lng: -117.5650 }
-      );
-
-      const autocomplete = new google.maps.places.Autocomplete(input, {
-        types: ["establishment"],
-        componentRestrictions: { country: "us" },
-        fields: ["place_id", "geometry", "name", "formatted_address"]
-      });
-
-      autocomplete.setBounds(RSM_BOUNDS);
-      autocomplete.addListener("place_changed", () => {
-        const place = autocomplete.getPlace();
-        if (!RSM_BOUNDS.contains(place.geometry.location)) {
-          alert("❌ Restaurant must be in Rancho Santa Margarita.");
-          input.value = "";
-        }
-      });
-    }
   </script>
 </body>
 </html>
