@@ -1,5 +1,18 @@
+const fetch = require('node-fetch');
+
 exports.handler = async function(event, context) {
-  const { restaurantAddress, customerAddress } = JSON.parse(event.body);
+  let restaurantAddress, customerAddress;
+
+  try {
+    const body = event.body ? JSON.parse(event.body) : {};
+    restaurantAddress = body.restaurantAddress;
+    customerAddress = body.customerAddress;
+  } catch (err) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ error: "Invalid JSON in request body." })
+    };
+  }
 
   if (!restaurantAddress || !customerAddress) {
     return {
@@ -25,9 +38,9 @@ exports.handler = async function(event, context) {
 
     let fee = 5.0;
     if (miles > 5) {
-      const extraMiles = miles - 5;
-      const roundedExtraFee = Math.ceil(extraMiles * 4) / 4; // round up to nearest $0.25
-      fee += roundedExtraFee;
+      const extra = miles - 5;
+      const rounded = Math.ceil(extra * 4) / 4; // round to next $0.25
+      fee = 5.0 + rounded;
     }
 
     return {
