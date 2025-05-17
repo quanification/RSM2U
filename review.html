@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -58,6 +57,11 @@
       document.getElementById("restaurant").textContent = data.restaurant;
       document.getElementById("orderTotal").textContent = data.orderTotal.toFixed(2);
       document.getElementById("tip").textContent = data.tip.toFixed(2);
+
+      console.log("Sending to calculateFee.js:", {
+        restaurantAddress: data.restaurant,
+        customerAddress: customerAddress
+      });
 
       fetchFee();
     }
