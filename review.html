@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,20 +14,52 @@
     <p><strong>Restaurant:</strong> <span id="restaurant"></span></p>
     <p><strong>Order Total:</strong> $<span id="orderTotal"></span></p>
     <p><strong>Tip:</strong> $<span id="tip"></span></p>
-    <p><strong>Delivery Fee:</strong> $<span id="deliveryFee"></span></p>
+    <p><strong>Delivery Fee:</strong> $<span id="deliveryFee">Calculating...</span></p>
     <p><strong>Total:</strong> $<span id="total"></span></p>
     <button onclick="alert('✅ Order submitted! (Integrate payment here)')">Submit & Pay</button>
   </main>
 
   <script>
     const data = JSON.parse(localStorage.getItem("rsm2u_order"));
+    const customerAddress = "10 Via Terrano, Rancho Santa Margarita, CA"; // Replace with real lookup later
+
+    async function fetchFee() {
+      try {
+        const res = await fetch("/.netlify/functions/calculateFee", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            restaurantAddress: data.restaurant,
+            customerAddress: customerAddress
+          })
+        });
+
+        const result = await res.json();
+        if (res.ok) {
+          const deliveryFee = parseFloat(result.fee);
+          const total = deliveryFee + data.tip;
+
+          document.getElementById("deliveryFee").textContent = deliveryFee.toFixed(2);
+          document.getElementById("total").textContent = total.toFixed(2);
+        } else {
+          document.getElementById("deliveryFee").textContent = "Error";
+          document.getElementById("total").textContent = "N/A";
+          alert("❌ Error calculating delivery fee: " + result.error);
+        }
+      } catch (err) {
+        document.getElementById("deliveryFee").textContent = "Error";
+        document.getElementById("total").textContent = "N/A";
+        alert("❌ Network error calculating fee.");
+      }
+    }
+
     if (data) {
       document.getElementById("email").textContent = data.email;
       document.getElementById("restaurant").textContent = data.restaurant;
       document.getElementById("orderTotal").textContent = data.orderTotal.toFixed(2);
       document.getElementById("tip").textContent = data.tip.toFixed(2);
-      document.getElementById("deliveryFee").textContent = data.deliveryFee.toFixed(2);
-      document.getElementById("total").textContent = data.total.toFixed(2);
+
+      fetchFee();
     }
   </script>
 </body>
