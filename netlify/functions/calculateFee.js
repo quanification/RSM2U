@@ -1,5 +1,3 @@
-const fetch = require('node-fetch');
-
 exports.handler = async function(event, context) {
   const { restaurantAddress, customerAddress } = JSON.parse(event.body);
 
@@ -27,10 +25,9 @@ exports.handler = async function(event, context) {
 
     let fee = 5.0;
     if (miles > 5) {
-      const extra = miles - 5;
-      const dollars = Math.ceil(extra);
-      const rounded = Math.ceil(dollars * 4) / 4; // round to next 0.25
-      fee = 5.0 + rounded;
+      const extraMiles = miles - 5;
+      const roundedExtraFee = Math.ceil(extraMiles * 4) / 4; // round up to nearest $0.25
+      fee += roundedExtraFee;
     }
 
     return {
