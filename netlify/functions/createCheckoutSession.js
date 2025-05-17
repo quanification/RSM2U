@@ -1,27 +1,35 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
-exports.handler = async (event) => {
+exports.handler = async function(event) {
   try {
-    const { email, restaurant, deliveryFee, tip } = JSON.parse(event.body);
+    const { email, amount } = JSON.parse(event.body);
+
+    if (!email || !amount) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: "Missing email or amount." }),
+      };
+    }
 
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      mode: 'payment',
+      payment_method_types: ["card"],
+      customer_email: email,
       line_items: [
         {
           price_data: {
-            currency: 'usd',
+            currency: "usd",
             product_data: {
-              name: `Delivery from ${restaurant}`,
+              name: "RSM2U Delivery",
+              description: "Local driver delivery request",
             },
-            unit_amount: Math.round((parseFloat(deliveryFee) + parseFloat(tip)) * 100), // in cents
+            unit_amount: amount, // amount in cents
           },
           quantity: 1,
-        }
+        },
       ],
-      customer_email: email,
-      success_url: 'https://rsm2u.netlify.app/success.html',
-      cancel_url: 'https://rsm2u.netlify.app/review.html',
+      mode: "payment",
+      success_url: "https://rsm2u.netlify.app/success.html",
+      cancel_url: "https://rsm2u.netlify.app/review.html",
     });
 
     return {
@@ -29,10 +37,10 @@ exports.handler = async (event) => {
       body: JSON.stringify({ url: session.url }),
     };
   } catch (err) {
-    console.error('Stripe Checkout error:', err);
+    console.error("❌ Stripe Error:", err);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: err.message }),
+      body: JSON.stringify({ error: "Stripe error", details: err.message }),
     };
   }
 };
