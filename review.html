@@ -11,12 +11,12 @@
     <h2>Review Your Delivery Request</h2>
     <p><strong>Email:</strong> <span id="email"></span></p>
     <p><strong>Restaurant:</strong> <span id="restaurant"></span></p>
-    <p><strong>Dropoff Address:</strong> <span id="address"></span></p>
+    <p><strong>Dropoff Address:</strong> <span id="dropoff"></span></p>
     <p><strong>Order Total:</strong> $<span id="orderTotal"></span></p>
     <p><strong>Tip:</strong> $<span id="tip"></span></p>
     <p><strong>Delivery Fee:</strong> $<span id="deliveryFee">Calculating...</span></p>
     <p><strong>Total:</strong> $<span id="total"></span></p>
-    <button id="payBtn">Submit & Pay</button>
+    <button onclick="submitOrder()">Submit & Pay</button>
   </main>
 
   <script>
@@ -29,7 +29,7 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             restaurantAddress: data.restaurant,
-            customerAddress: data.address
+            customerAddress: data.dropoff
           })
         });
 
@@ -40,58 +40,35 @@
 
           document.getElementById("deliveryFee").textContent = deliveryFee.toFixed(2);
           document.getElementById("total").textContent = total.toFixed(2);
+
+          // Save final fee + total for Stripe
           data.deliveryFee = deliveryFee;
           data.total = total;
           localStorage.setItem("rsm2u_order", JSON.stringify(data));
         } else {
-          document.getElementById("deliveryFee").textContent = "Error";
-          document.getElementById("total").textContent = "N/A";
-          alert("❌ Error calculating delivery fee: " + result.error);
+          throw new Error(result.error || "Unknown error");
         }
       } catch (err) {
         document.getElementById("deliveryFee").textContent = "Error";
         document.getElementById("total").textContent = "N/A";
-        alert("❌ Network error calculating fee.");
+        alert("❌ Error calculating delivery fee: " + err.message);
       }
+    }
+
+    function submitOrder() {
+      alert("✅ Order submitted! (This is where payment logic goes)");
+      // Replace with Stripe call if needed
     }
 
     if (data) {
       document.getElementById("email").textContent = data.email;
       document.getElementById("restaurant").textContent = data.restaurant;
-      document.getElementById("address").textContent = data.address;
+      document.getElementById("dropoff").textContent = data.dropoff;
       document.getElementById("orderTotal").textContent = data.orderTotal.toFixed(2);
       document.getElementById("tip").textContent = data.tip.toFixed(2);
+
       fetchFee();
     }
-
-    document.getElementById("payBtn").addEventListener("click", async () => {
-      const payload = {
-        email: data.email,
-        restaurant: data.restaurant,
-        address: data.address,
-        orderTotal: data.orderTotal,
-        deliveryFee: data.deliveryFee,
-        tip: data.tip,
-        total: data.total
-      };
-
-      try {
-        const res = await fetch("/.netlify/functions/createCheckoutSession", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-
-        const result = await res.json();
-        if (result.url) {
-          window.location.href = result.url;
-        } else {
-          alert("❌ Error redirecting to Stripe: " + (result.error || "No URL returned from Stripe."));
-        }
-      } catch (err) {
-        alert("❌ Network error: Could not reach Stripe.");
-      }
-    });
   </script>
 </body>
 </html>
