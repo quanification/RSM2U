@@ -1,1 +1,97 @@
-<restored content — see previous cell>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Review Delivery Request</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <main>
+    <h2>Review Your Delivery Request</h2>
+    <p><strong>Email:</strong> <span id="email"></span></p>
+    <p><strong>Restaurant:</strong> <span id="restaurant"></span></p>
+    <p><strong>Dropoff Address:</strong> <span id="address"></span></p>
+    <p><strong>Order Total:</strong> $<span id="orderTotal"></span></p>
+    <p><strong>Tip:</strong> $<span id="tip"></span></p>
+    <p><strong>Delivery Fee:</strong> $<span id="deliveryFee">Calculating...</span></p>
+    <p><strong>Total:</strong> $<span id="total"></span></p>
+    <button id="payBtn">Submit & Pay</button>
+  </main>
+
+  <script>
+    const data = JSON.parse(localStorage.getItem("rsm2u_order"));
+
+    async function fetchFee() {
+      try {
+        const res = await fetch("/.netlify/functions/calculateFee", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            restaurantAddress: data.restaurant,
+            customerAddress: data.address
+          })
+        });
+
+        const result = await res.json();
+        if (res.ok) {
+          const deliveryFee = parseFloat(result.fee);
+          const total = deliveryFee + data.tip;
+
+          document.getElementById("deliveryFee").textContent = deliveryFee.toFixed(2);
+          document.getElementById("total").textContent = total.toFixed(2);
+          data.deliveryFee = deliveryFee;
+          data.total = total;
+          localStorage.setItem("rsm2u_order", JSON.stringify(data));
+        } else {
+          document.getElementById("deliveryFee").textContent = "Error";
+          document.getElementById("total").textContent = "N/A";
+          alert("❌ Error calculating delivery fee: " + result.error);
+        }
+      } catch (err) {
+        document.getElementById("deliveryFee").textContent = "Error";
+        document.getElementById("total").textContent = "N/A";
+        alert("❌ Network error calculating fee.");
+      }
+    }
+
+    if (data) {
+      document.getElementById("email").textContent = data.email;
+      document.getElementById("restaurant").textContent = data.restaurant;
+      document.getElementById("address").textContent = data.address;
+      document.getElementById("orderTotal").textContent = data.orderTotal.toFixed(2);
+      document.getElementById("tip").textContent = data.tip.toFixed(2);
+      fetchFee();
+    }
+
+    document.getElementById("payBtn").addEventListener("click", async () => {
+      const payload = {
+        email: data.email,
+        restaurant: data.restaurant,
+        address: data.address,
+        orderTotal: data.orderTotal,
+        deliveryFee: data.deliveryFee,
+        tip: data.tip,
+        total: data.total
+      };
+
+      try {
+        const res = await fetch("/.netlify/functions/createCheckoutSession", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await res.json();
+        if (result.url) {
+          window.location.href = result.url;
+        } else {
+          alert("❌ Error redirecting to Stripe: " + (result.error || "No URL returned from Stripe."));
+        }
+      } catch (err) {
+        alert("❌ Network error: Could not reach Stripe.");
+      }
+    });
+  </script>
+</body>
+</html>
