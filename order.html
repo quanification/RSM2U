@@ -15,6 +15,9 @@
       <label for="screenshot">Upload Order Screenshot</label>
       <input type="file" id="screenshot" name="screenshot" accept="image/*" required />
 
+      <!-- 📷 Image preview added -->
+      <img id="screenshot-preview" src="" alt="Order Preview" style="max-width: 100%; margin-top: 1em; display: none;" />
+
       <label for="restaurant">Restaurant Name</label>
       <input type="text" id="restaurant" name="restaurant" placeholder="e.g. Chipotle, Trader Joe's" required />
 
@@ -44,6 +47,24 @@
       tip.addEventListener("change", () => {
         customTipInput.disabled = tip.value !== "custom";
       });
+    });
+
+    const screenshotInput = document.getElementById("screenshot");
+    const previewImg = document.getElementById("screenshot-preview");
+
+    screenshotInput.addEventListener("change", function () {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          previewImg.src = e.target.result;
+          previewImg.style.display = "block";
+        };
+        reader.readAsDataURL(file);
+      } else {
+        previewImg.src = "";
+        previewImg.style.display = "none";
+      }
     });
 
     let autocomplete;
