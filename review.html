@@ -16,7 +16,7 @@
     <p><strong>Tip:</strong> $<span id="tip"></span></p>
     <p><strong>Delivery Fee:</strong> $<span id="deliveryFee">Calculating...</span></p>
     <p><strong>Total:</strong> $<span id="total"></span></p>
-    <button onclick="submitOrder()">Submit & Pay</button>
+    <button id="payBtn">Submit & Pay</button>
   </main>
 
   <script>
@@ -41,7 +41,7 @@
           document.getElementById("deliveryFee").textContent = deliveryFee.toFixed(2);
           document.getElementById("total").textContent = total.toFixed(2);
 
-          // Save final fee + total for Stripe
+          // Save updated values
           data.deliveryFee = deliveryFee;
           data.total = total;
           localStorage.setItem("rsm2u_order", JSON.stringify(data));
@@ -55,9 +55,26 @@
       }
     }
 
-    function submitOrder() {
-      alert("✅ Order submitted! (This is where payment logic goes)");
-      // Replace with Stripe call if needed
+    async function redirectToStripe() {
+      try {
+        const res = await fetch("/.netlify/functions/createCheckoutSession", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            amount: (data.total * 100).toFixed(0), // Stripe expects cents
+            email: data.email
+          })
+        });
+
+        const result = await res.json();
+        if (res.ok && result.url) {
+          window.location.href = result.url;
+        } else {
+          throw new Error(result.error || "No URL returned from Stripe.");
+        }
+      } catch (err) {
+        alert("❌ Error redirecting to Stripe: " + err.message);
+      }
     }
 
     if (data) {
@@ -66,9 +83,10 @@
       document.getElementById("dropoff").textContent = data.dropoff;
       document.getElementById("orderTotal").textContent = data.orderTotal.toFixed(2);
       document.getElementById("tip").textContent = data.tip.toFixed(2);
-
       fetchFee();
     }
+
+    document.getElementById("payBtn").addEventListener("click", redirectToStripe);
   </script>
 </body>
 </html>
