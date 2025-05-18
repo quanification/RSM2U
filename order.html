@@ -1,1 +1,142 @@
-<restored content — see previous cell>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RSM2U - Place Your Delivery Request</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    main {
+      max-width: 600px;
+      margin: auto;
+    }
+    label, input, fieldset, button {
+      display: block;
+      width: 100%;
+      margin-bottom: 1em;
+    }
+    fieldset {
+      padding: 1em;
+    }
+    #preview {
+      margin-top: 1em;
+      max-width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>📦 Place Your Delivery Request</h1>
+    <p>Please upload a screenshot of your order, provide the restaurant info, dropoff address, and your total. We'll calculate delivery fees and tip next.</p>
+
+    <form id="order-form">
+      <label for="screenshot">Upload Order Screenshot</label>
+      <input type="file" id="screenshot" name="screenshot" accept="image/*" required />
+      <img id="preview" src="" alt="Preview will appear here" style="display:none;"/>
+
+      <label for="restaurant">Restaurant Name</label>
+      <input type="text" id="restaurant" name="restaurant" placeholder="e.g. Chipotle, Trader Joe's" required />
+
+      <label for="dropoff">Dropoff Address</label>
+      <input type="text" id="dropoff" name="dropoff" placeholder="Enter delivery address" required />
+
+      <label for="orderTotal">Order Total ($)</label>
+      <input type="number" step="0.01" id="orderTotal" name="orderTotal" placeholder="e.g. 32.50" required />
+
+      <fieldset>
+        <legend>Tip Amount</legend>
+        <label><input type="radio" name="tipOption" value="0.1" /> 10%</label>
+        <label><input type="radio" name="tipOption" value="0.15" /> 15%</label>
+        <label><input type="radio" name="tipOption" value="0.2" /> 20%</label>
+        <label>
+          <input type="radio" name="tipOption" value="custom" id="customTipRadio" />
+          Custom Tip: <input type="number" step="0.01" id="customTip" name="customTip" placeholder="Enter $ amount" disabled />
+        </label>
+      </fieldset>
+
+      <button type="submit">Continue</button>
+    </form>
+  </main>
+
+  <script>
+    const tipOptions = document.getElementsByName("tipOption");
+    const customTipInput = document.getElementById("customTip");
+
+    tipOptions.forEach((tip) => {
+      tip.addEventListener("change", () => {
+        customTipInput.disabled = tip.value !== "custom";
+      });
+    });
+
+    document.getElementById("screenshot").addEventListener("change", function(event) {
+      const file = event.target.files[0];
+      const preview = document.getElementById("preview");
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          preview.src = e.target.result;
+          preview.style.display = "block";
+        };
+        reader.readAsDataURL(file);
+      } else {
+        preview.style.display = "none";
+      }
+    });
+
+    let autocompleteRestaurant, autocompleteDropoff;
+
+    function initAutocomplete() {
+      autocompleteRestaurant = new google.maps.places.Autocomplete(
+        document.getElementById("restaurant"),
+        { types: ["establishment"], componentRestrictions: { country: "us" } }
+      );
+
+      autocompleteDropoff = new google.maps.places.Autocomplete(
+        document.getElementById("dropoff"),
+        { types: ["address"], componentRestrictions: { country: "us" } }
+      );
+    }
+
+    document.getElementById("order-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const orderTotal = parseFloat(document.getElementById("orderTotal").value);
+      const restaurant = document.getElementById("restaurant").value;
+      const dropoff = document.getElementById("dropoff").value;
+      const email = "QUANTSANG@HOTMAIL.COM";
+      const selectedTip = document.querySelector("input[name='tipOption']:checked");
+
+      let tip = 0;
+      if (selectedTip) {
+        if (selectedTip.value === "custom") {
+          tip = parseFloat(customTipInput.value);
+        } else {
+          tip = orderTotal * parseFloat(selectedTip.value);
+        }
+      }
+
+      const deliveryFee = 5.0;
+      const total = deliveryFee + tip;
+
+      const request = {
+        email,
+        restaurant,
+        dropoff,
+        orderTotal,
+        deliveryFee,
+        tip,
+        total
+      };
+
+      localStorage.setItem("rsm2u_order", JSON.stringify(request));
+      window.location.href = "review.html";
+    });
+  </script>
+
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDcIVNQtUTKU6LBmeF8b71473V_mkieoOw&libraries=places&callback=initAutocomplete" async defer></script>
+</body>
+</html>
