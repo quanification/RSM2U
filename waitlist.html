@@ -1,24 +1,19 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Join the RSM2U Waitlist</title>
-  <link rel="stylesheet" href="style.css" />
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <title>Join the Waitlist - RSM2U</title>
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-  <header>
-    <h1>🚗 Join the RSM2U Waitlist</h1>
-    <p>Please fill out the form below to request access. We’ll notify you when we’re ready to take new customers!</p>
-  </header>
-
   <main>
+    <h1>🚗 Join the RSM2U Waitlist</h1>
+    <p>We’re currently operating with limited capacity. Join our waitlist to be notified when a spot opens for deliveries!</p>
     <form name="waitlist" method="POST" data-netlify="true">
-      <input type="hidden" name="form-name" value="waitlist" />
+      <input type="hidden" name="form-name" value="waitlist">
       <label>
-        Your Name:
+        Full Name:
         <input type="text" name="name" required />
       </label>
       <label>
@@ -27,14 +22,21 @@
       </label>
       <label>
         Delivery Address:
-        <input type="text" name="address" required />
+        <input type="text" name="address" id="autocomplete-address" placeholder="Start typing your address" required />
       </label>
-      <button type="submit">Join Waitlist</button>
+      <button type="submit">Join the Waitlist</button>
     </form>
   </main>
 
-  <footer>
-    <p>&copy; 2025 RSM2U. All rights reserved.</p>
-  </footer>
+  <script>
+    function initAutocomplete() {
+      const input = document.getElementById("autocomplete-address");
+      const autocomplete = new google.maps.places.Autocomplete(input, {
+        types: ["geocode"],
+        componentRestrictions: { country: "us" }
+      });
+    }
+  </script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDcIVNQtUTKU6LBmeF8b71473V_mkieoOw&libraries=places&callback=initAutocomplete" async defer></script>
 </body>
 </html>
