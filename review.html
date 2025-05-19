@@ -16,65 +16,54 @@
     <p><strong>Tip:</strong> $<span id="tip"></span></p>
     <p><strong>Delivery Fee:</strong> $<span id="deliveryFee">Calculating...</span></p>
     <p><strong>Total:</strong> $<span id="total"></span></p>
-    <button id="payBtn">Submit & Pay</button>
+    <button id="submit">Submit & Pay</button>
   </main>
 
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   <script>
     const data = JSON.parse(localStorage.getItem("rsm2u_order"));
 
-    async function fetchFee() {
-      try {
-        const res = await fetch("/.netlify/functions/calculateFee", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            restaurantAddress: data.restaurant,
-            customerAddress: data.dropoff
-          })
-        });
-
-        const result = await res.json();
-        if (res.ok) {
+    function fetchFee() {
+      fetch("/.netlify/functions/calculateFee", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          restaurantAddress: data.restaurant,
+          customerAddress: data.dropoff
+        })
+      })
+      .then(res => res.json())
+      .then(result => {
+        if (result.fee) {
           const deliveryFee = parseFloat(result.fee);
           const total = deliveryFee + data.tip;
 
           document.getElementById("deliveryFee").textContent = deliveryFee.toFixed(2);
           document.getElementById("total").textContent = total.toFixed(2);
-
-          // Save updated values
-          data.deliveryFee = deliveryFee;
-          data.total = total;
-          localStorage.setItem("rsm2u_order", JSON.stringify(data));
         } else {
-          throw new Error(result.error || "Unknown error");
+          throw new Error(result.error);
         }
-      } catch (err) {
+      })
+      .catch(err => {
         document.getElementById("deliveryFee").textContent = "Error";
         document.getElementById("total").textContent = "N/A";
         alert("❌ Error calculating delivery fee: " + err.message);
-      }
+      });
     }
 
-    async function redirectToStripe() {
-      try {
-        const res = await fetch("/.netlify/functions/createCheckoutSession", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            amount: (data.total * 100).toFixed(0), // Stripe expects cents
-            email: data.email
-          })
-        });
-
-        const result = await res.json();
-        if (res.ok && result.url) {
-          window.location.href = result.url;
+    if (window.netlifyIdentity) {
+      netlifyIdentity.on("init", user => {
+        if (!user) {
+          netlifyIdentity.on("login", () => location.reload());
         } else {
-          throw new Error(result.error || "No URL returned from Stripe.");
+          const roles = user.app_metadata?.roles || [];
+          if (!roles.includes("approved")) {
+            alert("You're not yet approved to place delivery requests. You'll be notified once you're off the waitlist.");
+            window.location.href = "/waitlist.html";
+          }
         }
-      } catch (err) {
-        alert("❌ Error redirecting to Stripe: " + err.message);
-      }
+      });
+      netlifyIdentity.init();
     }
 
     if (data) {
@@ -86,7 +75,9 @@
       fetchFee();
     }
 
-    document.getElementById("payBtn").addEventListener("click", redirectToStripe);
+    document.getElementById("submit").addEventListener("click", () => {
+      alert("✅ Order submitted! (This is where payment logic goes)");
+    });
   </script>
 </body>
 </html>
