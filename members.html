@@ -5,45 +5,40 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Members Area - RSM2U</title>
   <link rel="stylesheet" href="style.css" />
-  <script src="https://cdn.auth0.com/js/auth0-spa-js/1.13/auth0-spa-js.production.js"></script>
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
   <header>
     <h1>Members Area</h1>
-    <nav><a href="#" id="logout">Log Out</a></nav>
+    <nav>
+      <a href="#" id="logout">Log Out</a>
+    </nav>
   </header>
 
   <main>
-    <p>Welcome! You’ve successfully logged in. This is your members-only page.</p>
+    <p id="welcome">Loading user info...</p>
   </main>
 
   <script>
-    let auth0 = null;
-
-    const configureClient = async () => {
-      auth0 = await createAuth0Client({
-        domain: "dev-snnjvf62qw1438rq.us.auth0.com",
-        client_id: "LetLfQ5N9xxeSu8mA6WpZkI9TeBZV7xM"
-      });
-    };
-
-    window.onload = async () => {
-      await configureClient();
-      const isAuthenticated = await auth0.isAuthenticated();
-      if (!isAuthenticated) {
-        const query = window.location.search;
-        if (query.includes("code=") && query.includes("state=")) {
-          await auth0.handleRedirectCallback();
+    if (window.netlifyIdentity) {
+      netlifyIdentity.on("init", user => {
+        if (!user) {
+          window.location.href = "/login.html"; // Or home page
         } else {
-          window.location.href = "/login.html";
-          return;
+          document.getElementById("welcome").textContent = `Welcome, ${user.email}!`;
         }
-      }
-
-      document.getElementById("logout").addEventListener("click", () => {
-        auth0.logout({ returnTo: window.location.origin });
       });
-    };
+
+      netlifyIdentity.on("logout", () => {
+        window.location.href = "/";
+      });
+
+      netlifyIdentity.init();
+    }
+
+    document.getElementById("logout").addEventListener("click", function () {
+      netlifyIdentity.logout();
+    });
   </script>
 </body>
 </html>
