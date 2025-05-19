@@ -12,7 +12,8 @@
     <h1>🚗 Join the RSM2U Waitlist</h1>
     <p>Please fill out the form below to join our waitlist for personalized delivery in Rancho Santa Margarita and surrounding areas.</p>
 
-    <form name="waitlist" method="POST" data-netlify="true">
+    <!-- ✅ Redirects to thank-you.html after submission -->
+    <form name="waitlist" method="POST" data-netlify="true" action="/thank-you.html">
       <input type="hidden" name="form-name" value="waitlist" />
 
       <label for="name">Full Name</label>
@@ -31,6 +32,7 @@
     </form>
   </main>
 
+  <!-- Netlify Identity init -->
   <script>
     if (window.netlifyIdentity) {
       window.netlifyIdentity.on("init", user => {
@@ -44,6 +46,7 @@
     window.netlifyIdentity.init();
   </script>
 
+  <!-- Google Maps Autocomplete -->
   <script>
     let autocomplete;
     function initAutocomplete() {
