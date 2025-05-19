@@ -5,36 +5,52 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Join the Waitlist - RSM2U</title>
   <link rel="stylesheet" href="style.css"/>
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
   <main>
     <h1>🚗 Join the RSM2U Waitlist</h1>
-    <p>We’re currently operating with limited capacity. Join our waitlist to be notified when a spot opens for deliveries!</p>
+    <p>Please fill out the form below to join our waitlist for personalized delivery in Rancho Santa Margarita and surrounding areas.</p>
+
     <form name="waitlist" method="POST" data-netlify="true">
-      <input type="hidden" name="form-name" value="waitlist">
-      <label>
-        Full Name:
-        <input type="text" name="name" required />
-      </label>
-      <label>
-        Email Address:
-        <input type="email" name="email" required />
-      </label>
-      <label>
-        Delivery Address:
-        <input type="text" name="address" id="autocomplete-address" placeholder="Start typing your address" required />
-      </label>
-      <button type="submit">Join the Waitlist</button>
+      <input type="hidden" name="form-name" value="waitlist" />
+
+      <label for="name">Full Name</label>
+      <input type="text" id="name" name="name" required />
+
+      <label for="email">Email Address</label>
+      <input type="email" id="email" name="email" required />
+
+      <label for="phone">Phone Number</label>
+      <input type="tel" id="phone" name="phone" required />
+
+      <label for="address">Delivery Address</label>
+      <input type="text" id="address" name="address" placeholder="Enter delivery address" required />
+
+      <button type="submit">Join Waitlist</button>
     </form>
   </main>
 
   <script>
-    function initAutocomplete() {
-      const input = document.getElementById("autocomplete-address");
-      const autocomplete = new google.maps.places.Autocomplete(input, {
-        types: ["geocode"],
-        componentRestrictions: { country: "us" }
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.on("init", user => {
+        if (!user) {
+          window.netlifyIdentity.on("login", user => {
+            document.location.href = "/members.html";
+          });
+        }
       });
+    }
+    window.netlifyIdentity.init();
+  </script>
+
+  <script>
+    let autocomplete;
+    function initAutocomplete() {
+      autocomplete = new google.maps.places.Autocomplete(
+        document.getElementById("address"),
+        { types: ["address"], componentRestrictions: { country: "us" } }
+      );
     }
   </script>
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDcIVNQtUTKU6LBmeF8b71473V_mkieoOw&libraries=places&callback=initAutocomplete" async defer></script>
