@@ -18,9 +18,11 @@
   <section id="waitlist-info" style="margin-top: 3em; text-align: center;">
     <h2>🚗 Join the RSM2U Waitlist</h2>
     <p style="max-width: 600px; margin: 0 auto;">
-      We’re currently operating with limited capacity to ensure every customer gets exceptional service. Join our waitlist and we’ll notify you when a spot opens up!
+      We’re currently operating with limited capacity to ensure every customer gets exceptional service. If you'd like to be part of our local delivery service, join our waitlist and we’ll notify you when a spot opens up!
     </p>
-    <a href="/waitlist.html" class="button" style="margin-top: 1em;">Join the Waitlist</a>
+    <a href="/waitlist.html" style="margin-top: 1em; display: inline-block; padding: 0.75em 1.5em; background: #4CAF50; color: white; border-radius: 5px; text-decoration: none;">
+      Join the Waitlist
+    </a>
   </section>
 
   <main>
@@ -74,12 +76,19 @@
         client_id: "LetLfQ5N9xxeSu8mA6WpZkI9TeBZV7xM",
         redirect_uri: window.location.origin + "/members.html"
       });
+
+      if (window.location.search.includes("code=") && window.location.search.includes("state=")) {
+        await auth0Client.handleRedirectCallback();
+        window.history.replaceState({}, document.title, "/members.html");
+      }
     }
 
     async function login() {
       await configureAuth0();
-      auth0Client.loginWithRedirect();
+      await auth0Client.loginWithRedirect();
     }
+
+    configureAuth0();
   </script>
 </body>
 </html>
