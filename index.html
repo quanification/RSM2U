@@ -12,18 +12,9 @@
     <h1>RSM2U</h1>
     <p>Local, Affordable Delivery for Groceries and Restaurants in South Orange County</p>
     <a href="how-it-works.html" class="button">How It Works</a>
-    <a href="#" class="button" onclick="login()">Login</a>
+    <button id="btn-login" class="button">Login</button>
+    <button id="btn-logout" class="button" style="display:none;">Logout</button>
   </header>
-
-  <section id="waitlist-info" style="margin-top: 3em; text-align: center;">
-    <h2>🚗 Join the RSM2U Waitlist</h2>
-    <p style="max-width: 600px; margin: 0 auto;">
-      We’re currently operating with limited capacity to ensure every customer gets exceptional service. If you'd like to be part of our local delivery service, join our waitlist and we’ll notify you when a spot opens up!
-    </p>
-    <a href="/waitlist.html" style="margin-top: 1em; display: inline-block; padding: 0.75em 1.5em; background: #4CAF50; color: white; border-radius: 5px; text-decoration: none;">
-      Join the Waitlist
-    </a>
-  </section>
 
   <main>
     <section>
@@ -48,18 +39,7 @@
 
     <section class="cta">
       <h2>Ready to Place an Order?</h2>
-      <p><a href="#contact" class="button">Contact Us</a> to get started!</p>
-    </section>
-
-    <section id="contact">
-      <h2>Contact Us</h2>
-      <form name="contact" method="POST" data-netlify="true">
-        <input type="hidden" name="form-name" value="contact">
-        <label>Your Name: <input type="text" name="name" required></label>
-        <label>Your Email: <input type="email" name="email" required></label>
-        <label>Message: <textarea name="message" required></textarea></label>
-        <button type="submit">Send</button>
-      </form>
+      <p><a href="/order.html" class="button">Place Order</a></p>
     </section>
   </main>
 
@@ -70,25 +50,39 @@
   <script>
     let auth0Client;
 
-    async function configureAuth0() {
+    const initAuth0 = async () => {
       auth0Client = await createAuth0Client({
-        domain: "dev-snnjvf62qw1438rq.us.auth0.com",
-        client_id: "LetLfQ5N9xxeSu8mA6WpZkI9TeBZV7xM",
-        redirect_uri: window.location.origin + "/members.html"
+        domain: "dev-snnjvf62qw1438rq.us.auth0.com", // e.g. dev-123abc.us.auth0.com
+        client_id: "LetLfQ5N9xxeSu8mA6WpZkI9TeBZV7xM", // e.g. aBc123456XYZ
+        cacheLocation: "localstorage"
       });
 
-      if (window.location.search.includes("code=") && window.location.search.includes("state=")) {
-        await auth0Client.handleRedirectCallback();
-        window.history.replaceState({}, document.title, "/members.html");
+      const isAuthenticated = await auth0Client.isAuthenticated();
+
+      if (isAuthenticated) {
+        document.getElementById("btn-login").style.display = "none";
+        document.getElementById("btn-logout").style.display = "inline-block";
+        window.location.href = "/members.html";
       }
-    }
+    };
 
-    async function login() {
-      await configureAuth0();
-      await auth0Client.loginWithRedirect();
-    }
+    window.onload = async () => {
+      await initAuth0();
 
-    configureAuth0();
+      document.getElementById("btn-login").addEventListener("click", async () => {
+        await auth0Client.loginWithPopup();
+        const isAuthenticated = await auth0Client.isAuthenticated();
+        if (isAuthenticated) {
+          window.location.href = "/members.html";
+        }
+      });
+
+      document.getElementById("btn-logout").addEventListener("click", () => {
+        auth0Client.logout({
+          returnTo: window.location.origin
+        });
+      });
+    };
   </script>
 </body>
 </html>
