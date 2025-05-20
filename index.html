@@ -2,98 +2,116 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>RSM2U - Local Delivery Services</title>
-    <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RSM2U - Local Delivery Services</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <header class="hero">
-        <h1>RSM2U</h1>
-        <p>Local, Affordable Delivery for Groceries and Restaurants in South Orange County</p>
-        <a href="how-it-works.html" class="button">How It Works</a>
-        <a href="#" class="button" id="btn-login">Login</a>
-    </header>
+  <header class="hero">
+    <h1>RSM2U</h1>
+    <p>Local, Affordable Delivery for Groceries and Restaurants in South Orange County</p>
+    <a href="how-it-works.html" class="button">How It Works</a>
+    <a href="#" id="login-button" class="button">Login</a>
+  </header>
 
-    <main>
-        <section>
-            <h2>What We Do</h2>
-            <p>RSM2U is your personal delivery service for grocery, restaurant, and essential pickups. We shop or pick up on your behalf and deliver directly to your doorstep—without the high fees of national apps.</p>
-        </section>
+  <main>
+    <section>
+      <h2>What We Do</h2>
+      <p>RSM2U is your personal delivery service for grocery, restaurant, and essential pickups. We shop or pick up on your behalf and deliver directly to your doorstep—without the high fees of national apps.</p>
+    </section>
 
-        <section>
-            <h2>Why Choose RSM2U?</h2>
-            <ul>
-                <li>✅ Experienced local drivers</li>
-                <li>✅ Lower costs than app-based services</li>
-                <li>✅ Personal, text-based communication</li>
-                <li>✅ No surprise fees or cancellations</li>
-            </ul>
-        </section>
+    <section>
+      <h2>Why Choose RSM2U?</h2>
+      <ul>
+        <li>✅ Experienced local drivers</li>
+        <li>✅ Lower costs than app-based services</li>
+        <li>✅ Personal, text-based communication</li>
+        <li>✅ No surprise fees or cancellations</li>
+      </ul>
+    </section>
 
-        <section>
-            <h2>Where We Deliver</h2>
-            <p>We proudly serve Rancho Santa Margarita, Robinson Ranch, Dove Canyon, and Coto de Caza.</p>
-        </section>
+    <section>
+      <h2>Where We Deliver</h2>
+      <p>We proudly serve Rancho Santa Margarita, Robinson Ranch, Dove Canyon, and Coto de Caza.</p>
+    </section>
 
-        <section id="waitlist-info" style="margin-top: 3em; text-align: center;">
-            <h2>🚗 Join the RSM2U Waitlist</h2>
-            <p style="max-width: 600px; margin: 0 auto;">
-                We’re currently operating with limited capacity to ensure every customer gets exceptional service. If you'd like to be part of our local delivery service, join our waitlist and we’ll notify you when a spot opens up!
-            </p>
-            <a href="/waitlist.html" style="margin-top: 1em; display: inline-block; padding: 0.75em 1.5em; background: #4CAF50; color: white; border-radius: 5px; text-decoration: none;">
-                Join the Waitlist
-            </a>
-        </section>
+    <section id="waitlist-info" style="margin-top: 3em; text-align: center;">
+      <h2>🚗 Join the RSM2U Waitlist</h2>
+      <p style="max-width: 600px; margin: 0 auto;">
+        We’re currently operating with limited capacity to ensure every customer gets exceptional service. If you'd like to be part of our local delivery service, join our waitlist and we’ll notify you when a spot opens up!
+      </p>
+      <a href="/waitlist.html" style="margin-top: 1em; display: inline-block; padding: 0.75em 1.5em; background: #4CAF50; color: white; border-radius: 5px; text-decoration: none;">
+        Join the Waitlist
+      </a>
+    </section>
 
-        <section class="cta">
-            <h2>Ready to Place an Order?</h2>
-            <p><a href="#contact" class="button">Contact Us</a> to get started!</p>
-        </section>
+    <section class="cta">
+      <h2>Ready to Place an Order?</h2>
+      <p><a href="#contact" class="button">Contact Us</a> to get started!</p>
+    </section>
 
-        <section id="contact">
-            <h2>Contact Us</h2>
-            <form name="contact" method="POST" data-netlify="true">
-                <input type="hidden" name="form-name" value="contact">
-                <label>Your Name: <input type="text" name="name" required></label>
-                <label>Your Email: <input type="email" name="email" required></label>
-                <label>Message: <textarea name="message" required></textarea></label>
-                <button type="submit">Send</button>
-            </form>
-        </section>
-    </main>
+    <section id="contact">
+      <h2>Contact Us</h2>
+      <form name="contact" method="POST" data-netlify="true">
+        <input type="hidden" name="form-name" value="contact">
+        <label>Your Name: <input type="text" name="name" required></label>
+        <label>Your Email: <input type="email" name="email" required></label>
+        <label>Message: <textarea name="message" required></textarea></label>
+        <button type="submit">Send</button>
+      </form>
+    </section>
+  </main>
 
-    <footer>
-        <p>&copy; 2025 RSM2U. All rights reserved.</p>
-    </footer>
+  <footer>
+    <p>&copy; 2025 RSM2U. All rights reserved.</p>
+  </footer>
 
-    <script src="https://cdn.auth0.com/js/auth0-spa-js/1.13/auth0-spa-js.production.js"></script>
-    <script>
-        let auth0Client = null;
+  <script src="https://cdn.auth0.com/js/auth0-spa-js/1.13/auth0-spa-js.production.js"></script>
+  <script>
+    let auth0 = null;
 
-        const initAuth0 = async () => {
-            auth0Client = await createAuth0Client({
-                domain: "dev-snnjvf62qw1438rq.us.auth0.com",
-                client_id: "LetLfQ5N9xxeSu8mA6WpZkI9TeBZV7xM",
-                cacheLocation: "localstorage"
-            });
+    const configureAuth0 = async () => {
+      auth0 = await createAuth0Client({
+        domain: "dev-snnjvf62qw1438rq.us.auth0.com",
+        client_id: "LetLfQ5N9xxeSu8mA6WpZkI9TeBZV7xM",
+        cacheLocation: "localstorage"
+      });
 
-            const isAuthenticated = await auth0Client.isAuthenticated();
+      const isAuthenticated = await auth0.isAuthenticated();
 
-            if (isAuthenticated) {
-                window.location.href = "/members.html";
-            }
+      if (isAuthenticated) {
+        window.location.href = "/members.html";
+        return;
+      }
 
-            document.getElementById("btn-login").addEventListener("click", async () => {
-                await auth0Client.loginWithPopup();
-                const isAuthNow = await auth0Client.isAuthenticated();
-                if (isAuthNow) {
-                    window.location.href = "/members.html";
-                }
-            });
-        };
+      const query = window.location.search;
+      if (query.includes("code=") && query.includes("state=")) {
+        await auth0.handleRedirectCallback();
+        window.history.replaceState({}, document.title, "/");
+        const isAuthenticated = await auth0.isAuthenticated();
+        if (isAuthenticated) {
+          window.location.href = "/members.html";
+        }
+      }
+    };
 
-        window.onload = initAuth0;
-    </script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      await configureAuth0();
+
+      document.getElementById("login-button").addEventListener("click", async (e) => {
+        e.preventDefault();
+        try {
+          await auth0.loginWithPopup();
+          const user = await auth0.getUser();
+          if (user) {
+            window.location.href = "/members.html";
+          }
+        } catch (err) {
+          alert("Login failed: " + err.message);
+        }
+      });
+    });
+  </script>
 </body>
 </html>
