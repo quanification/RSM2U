@@ -4,10 +4,10 @@ exports.handler = async function(event) {
   try {
     const { email, amount } = JSON.parse(event.body);
 
-    if (!email || !amount) {
+    if (!email || typeof amount !== "number" || isNaN(amount)) {
       return {
         statusCode: 400,
-        body: JSON.stringify({ error: "Missing email or amount." }),
+        body: JSON.stringify({ error: "Invalid or missing email/amount." }),
       };
     }
 
@@ -22,14 +22,14 @@ exports.handler = async function(event) {
               name: "RSM2U Delivery",
               description: "Local driver delivery request",
             },
-            unit_amount: amount, // amount in cents
+            unit_amount: Math.round(amount * 100), // ✅ convert dollars to cents
           },
           quantity: 1,
         },
       ],
       mode: "payment",
       success_url: "https://rsm2u.netlify.app/success.html",
-      cancel_url: 'https://rsm2u.netlify.app/cancel.html',
+      cancel_url: "https://rsm2u.netlify.app/cancel.html",
     });
 
     return {
