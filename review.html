@@ -23,15 +23,14 @@
   <script>
     const data = JSON.parse(localStorage.getItem("rsm2u_order"));
 
-    function fetchFee() {
-      fetch("/.netlify/functions/calculateFee", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          restaurantAddress: data.restaurant,
-          customerAddress: data.dropoff
-        })
+    fetch("/.netlify/functions/createCheckoutSession", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: data.email,
+        amount: data.total
       })
+    })
       .then(res => res.json())
       .then(result => {
         if (result.fee) {
