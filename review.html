@@ -75,8 +75,26 @@
       fetchFee();
     }
 
-    document.getElementById("submit").addEventListener("click", () => {
-      alert("✅ Order submitted! (This is where payment logic goes)");
+    document.getElementById("submit").addEventListener("click", async () => {
+      try {
+        const response = await fetch("/.netlify/functions/createCheckoutSession", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: data.email,
+            amount: (data.tip + parseFloat(document.getElementById("deliveryFee").textContent)).toFixed(2)
+          })
+        });
+
+        const result = await response.json();
+        if (result.url) {
+          window.location.href = result.url;
+        } else {
+          throw new Error(result.error || "No URL returned from Stripe.");
+        }
+      } catch (err) {
+        alert("❌ Error redirecting to Stripe: " + err.message);
+      }
     });
   </script>
 </body>
