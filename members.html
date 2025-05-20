@@ -1,25 +1,28 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>RSM2U Members</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RSM2U - Member Dashboard</title>
+  <link rel="stylesheet" href="style.css">
   <script src="https://cdn.auth0.com/js/auth0-spa-js/1.13/auth0-spa-js.production.js"></script>
 </head>
 <body>
-  <header>
-    <h1 id="welcome"></h1>
-    <nav><a href="#" id="logout">Log Out</a></nav>
-  </header>
-
   <main>
-    <button onclick="window.location.href='order.html'">Place Order</button>
-    <h2>Past Orders</h2>
-    <ul id="orderLog">
-      <li>No orders yet.</li>
-    </ul>
+    <h1>Welcome to Your Delivery Dashboard, <span id="user-name"></span>!</h1>
+    <p><strong>Email:</strong> <span id="user-email"></span></p>
+
+    <button onclick="location.href='order.html'">📦 Place an Order</button>
+    <button id="logout">Log Out</button>
+
+    <section>
+      <h2>Your Past Orders</h2>
+      <ul id="order-log">
+        <!-- Placeholder orders -->
+        <li>📦 Chipotle - May 2, 2025 - $27.50</li>
+        <li>📦 Trader Joe’s - April 24, 2025 - $43.80</li>
+      </ul>
+    </section>
   </main>
 
   <script>
@@ -28,18 +31,15 @@
     const configureClient = async () => {
       auth0 = await createAuth0Client({
         domain: "dev-snnjvf62qw1438rq.us.auth0.com",
-        client_id: "LetLfQ5N9xxeSu8mA6WpZkI9TeBZV7xM"
+        client_id: "LetLfQ5N9xxeSu8mA6WpZkI9TeBZV7xM",
+        cacheLocation: "localstorage",
+        useRefreshTokens: true
       });
-    };
-
-    const updateUI = async () => {
-      const user = await auth0.getUser();
-      const name = user.name || user.nickname || user.email;
-      document.getElementById("welcome").textContent = "Welcome, " + name;
     };
 
     window.onload = async () => {
       await configureClient();
+
       const isAuthenticated = await auth0.isAuthenticated();
 
       if (!isAuthenticated) {
@@ -48,12 +48,14 @@
           await auth0.handleRedirectCallback();
           window.history.replaceState({}, document.title, "/members.html");
         } else {
-          window.location.href = "/login.html";
+          window.location.href = "/index.html";
           return;
         }
       }
 
-      updateUI();
+      const user = await auth0.getUser();
+      document.getElementById("user-name").textContent = user.name || "Member";
+      document.getElementById("user-email").textContent = user.email;
 
       document.getElementById("logout").addEventListener("click", () => {
         auth0.logout({ returnTo: window.location.origin });
