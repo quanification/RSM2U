@@ -5,17 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Join the Waitlist - RSM2U</title>
   <link rel="stylesheet" href="style.css"/>
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
   <main>
     <h1>🚗 Join the RSM2U Waitlist</h1>
     <p>Please fill out the form below to join our waitlist for personalized delivery in Rancho Santa Margarita and surrounding areas.</p>
 
-    <!-- ✅ Redirects to thank-you.html after submission -->
-    <form name="waitlist" method="POST" data-netlify="true" action="/thank-you.html">
-      <input type="hidden" name="form-name" value="waitlist" />
-
+    <form action="https://formspree.io/f/xrbqjkbo" method="POST" onsubmit="return handleSubmit();">
       <label for="name">Full Name</label>
       <input type="text" id="name" name="name" required />
 
@@ -32,22 +28,14 @@
     </form>
   </main>
 
-  <!-- Netlify Identity init -->
   <script>
-    if (window.netlifyIdentity) {
-      window.netlifyIdentity.on("init", user => {
-        if (!user) {
-          window.netlifyIdentity.on("login", user => {
-            document.location.href = "/members.html";
-          });
-        }
-      });
+    function handleSubmit() {
+      setTimeout(() => {
+        window.location.href = "/thank-you.html";
+      }, 100);
+      return true;
     }
-    window.netlifyIdentity.init();
-  </script>
 
-  <!-- Google Maps Autocomplete -->
-  <script>
     let autocomplete;
     function initAutocomplete() {
       autocomplete = new google.maps.places.Autocomplete(
