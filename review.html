@@ -10,6 +10,7 @@
   <main>
     <h2>Review Your Delivery Request</h2>
     <p><strong>Email:</strong> <span id="email"></span></p>
+    <p><strong>Pickup Time:</strong> <span id="pickupTime"></span></p>
     <p><strong>Restaurant:</strong> <span id="restaurant"></span></p>
     <p><strong>Dropoff Address:</strong> <span id="dropoff"></span></p>
     <p><strong>Order Total:</strong> $<span id="orderTotal"></span></p>
@@ -40,6 +41,7 @@
 
           document.getElementById("deliveryFee").textContent = deliveryFee.toFixed(2);
           document.getElementById("total").textContent = total.toFixed(2);
+          document.getElementById("pickupTime").textContent = data.pickupTime;
 
           // Update localStorage with new values
           data.deliveryFee = deliveryFee;
