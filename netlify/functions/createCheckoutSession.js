@@ -4,6 +4,7 @@ exports.handler = async function(event) {
   try {
     const { email, amount } = JSON.parse(event.body);
 
+    // ✅ Validate inputs
     if (!email || typeof amount !== "number" || isNaN(amount)) {
       return {
         statusCode: 400,
@@ -11,6 +12,7 @@ exports.handler = async function(event) {
       };
     }
 
+    // ✅ Create Stripe session (assuming amount is already in cents)
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       customer_email: email,
@@ -36,8 +38,9 @@ exports.handler = async function(event) {
       statusCode: 200,
       body: JSON.stringify({ url: session.url }),
     };
+
   } catch (err) {
-    console.error("❌ Stripe Error:", err);
+    console.error("❌ Stripe Error:", err); // This will show the real issue in Netlify logs
     return {
       statusCode: 500,
       body: JSON.stringify({ error: "Stripe error", details: err.message }),
