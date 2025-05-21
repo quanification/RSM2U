@@ -22,7 +22,7 @@ exports.handler = async function(event) {
               name: "RSM2U Delivery",
               description: "Local driver delivery request",
             },
-            unit_amount: Math.round(amount * 100), // ✅ convert dollars to cents
+            unit_amount: amount, // already in cents
           },
           quantity: 1,
         },
