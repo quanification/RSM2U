@@ -23,14 +23,15 @@
   <script>
     const data = JSON.parse(localStorage.getItem("rsm2u_order"));
 
-    fetch("/.netlify/functions/createCheckoutSession", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: data.email,
-        amount: data.total
+    function fetchFee() {
+      fetch("/.netlify/functions/calculateFee", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          restaurantAddress: data.restaurant,
+          customerAddress: data.dropoff
+        })
       })
-    })
       .then(res => res.json())
       .then(result => {
         if (result.fee) {
@@ -39,6 +40,11 @@
 
           document.getElementById("deliveryFee").textContent = deliveryFee.toFixed(2);
           document.getElementById("total").textContent = total.toFixed(2);
+
+          // Update localStorage with new values
+          data.deliveryFee = deliveryFee;
+          data.total = total;
+          localStorage.setItem("rsm2u_order", JSON.stringify(data));
         } else {
           throw new Error(result.error);
         }
@@ -76,20 +82,24 @@
 
     document.getElementById("submit").addEventListener("click", async () => {
       try {
+        const stored = JSON.parse(localStorage.getItem("rsm2u_order"));
+        const amountCents = Math.round(Number(stored.total) * 100);
+
         const response = await fetch("/.netlify/functions/createCheckoutSession", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            email: data.email,
-            amount: (data.tip + parseFloat(document.getElementById("deliveryFee").textContent)).toFixed(2)
+            email: stored.email,
+            amount: amountCents
           })
         });
 
         const result = await response.json();
-        if (result.url) {
+
+        if (response.ok && result.url) {
           window.location.href = result.url;
         } else {
-          throw new Error(result.error || "No URL returned from Stripe.");
+          throw new Error(result.error || "Unknown error");
         }
       } catch (err) {
         alert("❌ Error redirecting to Stripe: " + err.message);
