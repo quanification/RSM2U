@@ -83,7 +83,7 @@
     document.getElementById("submit").addEventListener("click", async () => {
       try {
         const stored = JSON.parse(localStorage.getItem("rsm2u_order"));
-        const amountCents = Math.round(Number(stored.total));
+        const amountCents = Number(stored.total);
 
         const response = await fetch("/.netlify/functions/createCheckoutSession", {
           method: "POST",
