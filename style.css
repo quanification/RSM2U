@@ -1,6 +1,11 @@
+.hero {
+  text-align: center;
+  padding: 2em;
+}
 .logo {
-  height: 80px;
-  margin-bottom: 10px;
+  height: 100px;
+  margin-bottom: 0.5em;
+  cursor: pointer;
 }
 body {
   font-family: Arial, sans-serif;
