@@ -8,10 +8,10 @@
 
 .logo-title {
   display: flex;
-  align-items: center;
+  align-items: left;
   gap: 1em;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: left;
 }
 
 .logo {
