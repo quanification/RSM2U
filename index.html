@@ -16,7 +16,7 @@
     </div>
   </div>
   <div class="header-buttons">
-  <a href="#" class="login-link" id="loginBtn">Login</a>
+  <a href="#" id="loginBtn" class="login-link">Login</a>
   </div>
 </header>
 
@@ -65,23 +65,23 @@
   </footer>
 
   <script src="https://cdn.auth0.com/js/auth0-spa-js/1.13/auth0-spa-js.production.js"></script>
-  <script>
-    let auth0Client;
+<script>
+  let auth0Client;
 
-    async function initAuth0() {
-      auth0Client = await createAuth0Client({
-        domain: "dev-snnjvf62qw1438rq.us.auth0.com",
-        client_id: "LetLfQ5N9xxeSu8mA6WpZkI9TeBZV7xM",
-        cacheLocation: "localstorage"
-      });
+  async function initAuth0() {
+    auth0Client = await createAuth0Client({
+      domain: "dev-snnjvf62qw1438rq.us.auth0.com",
+      client_id: "LetLfQ5N9xxeSu8mA6WpZkI9TeBZV7xM",
+      cacheLocation: "localstorage"
+    });
 
-      const isAuthenticated = await auth0.isAuthenticated();
+    const isAuthenticated = await auth0Client.isAuthenticated();
 
-      if (isAuthenticated) {
-        window.location.href = "/members.html";
-      }
+    if (isAuthenticated) {
+      window.location.href = "/members.html";
+    }
 
-      document.getElementById("loginBtn").addEventListener("click", async (e) => {
+    document.getElementById("loginBtn").addEventListener("click", async (e) => {
       e.preventDefault();
       await auth0Client.loginWithPopup();
       const user = await auth0Client.getUser();
@@ -92,6 +92,6 @@
   }
 
   window.onload = initAuth0;
-  </script>
+</script>
 </body>
 </html>
