@@ -1,21 +1,47 @@
+/* --- Header Section --- */
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1em 2em;
+  border-bottom: 1px solid #ddd;
+  flex-wrap: wrap;
+}
+
+.logo-title {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  flex-wrap: wrap;
+}
+
+.logo {
+  height: 80px;
+}
+
+.tagline {
+  font-size: 1rem;
+  line-height: 1.4;
+  max-width: 400px;
+}
+
+.login-link {
+  font-weight: bold;
+  color: #4CAF50;
+  text-decoration: none;
+}
+
+.login-link:hover {
+  text-decoration: underline;
+}
+
+/* --- Hero Section --- */
 .hero {
   display: flex;
   flex-direction: column;
   align-items: left;
   padding: 2em;
   text-align: left;
-}
-
-.logo-title {
-  display: flex;
-  align-items: left;
-  gap: 1em;
-  flex-wrap: wrap;
-  justify-content: left;
-}
-
-.logo {
-  height: 80px;
 }
 
 .site-title h1 {
@@ -28,6 +54,8 @@
   font-size: 1rem;
   max-width: 400px;
 }
+
+/* --- Body and Layout --- */
 body {
   font-family: Arial, sans-serif;
   max-width: 600px;
@@ -35,7 +63,10 @@ body {
   padding: 0 1em;
   line-height: 1.6;
 }
-input, textarea {
+
+/* --- Forms --- */
+input,
+textarea {
   display: block;
   width: 100%;
   padding: 0.75em;
@@ -43,6 +74,8 @@ input, textarea {
   border: 1px solid #ccc;
   border-radius: 5px;
 }
+
+/* --- Buttons --- */
 button {
   background: #4CAF50;
   color: white;
@@ -51,9 +84,12 @@ button {
   border-radius: 5px;
   cursor: pointer;
 }
+
 button:hover {
   background: #45a049;
 }
+
+/* --- Centering Utility --- */
 .center-button {
   text-align: center;
   margin-top: 1em;
