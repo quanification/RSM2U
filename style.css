@@ -26,13 +26,18 @@
 }
 
 .login-link {
-  font-weight: bold;
-  color: #4CAF50;
+  background-color: #247c6b; /* pulled from your logo */
+  color: white;
+  padding: 0.6em 1.2em;
+  border-radius: 5px;
   text-decoration: none;
+  font-weight: bold;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
 }
 
 .login-link:hover {
-  text-decoration: underline;
+  background-color: #1d6657; /* darker hover version */
 }
 
 /* --- Hero Section --- */
