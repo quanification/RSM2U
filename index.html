@@ -66,10 +66,10 @@
 
   <script src="https://cdn.auth0.com/js/auth0-spa-js/1.13/auth0-spa-js.production.js"></script>
   <script>
-    let auth0 = null;
+    let auth0Client;
 
-    const configureAuth0 = async () => {
-      auth0 = await createAuth0Client({
+    async function initAuth0() {
+      auth0Client = await createAuth0Client({
         domain: "dev-snnjvf62qw1438rq.us.auth0.com",
         client_id: "LetLfQ5N9xxeSu8mA6WpZkI9TeBZV7xM",
         cacheLocation: "localstorage"
@@ -79,36 +79,19 @@
 
       if (isAuthenticated) {
         window.location.href = "/members.html";
-        return;
       }
 
-      const query = window.location.search;
-      if (query.includes("code=") && query.includes("state=")) {
-        await auth0.handleRedirectCallback();
-        window.history.replaceState({}, document.title, "/");
-        const isAuthenticated = await auth0.isAuthenticated();
-        if (isAuthenticated) {
-          window.location.href = "/members.html";
-        }
+      document.getElementById("loginBtn").addEventListener("click", async (e) => {
+      e.preventDefault();
+      await auth0Client.loginWithPopup();
+      const user = await auth0Client.getUser();
+      if (user) {
+        window.location.href = "/members.html";
       }
-    };
-
-    document.addEventListener("DOMContentLoaded", async () => {
-      await configureAuth0();
-
-      document.getElementById("login-button").addEventListener("click", async (e) => {
-        e.preventDefault();
-        try {
-          await auth0.loginWithPopup();
-          const user = await auth0.getUser();
-          if (user) {
-            window.location.href = "/members.html";
-          }
-        } catch (err) {
-          alert("Login failed: " + err.message);
-        }
-      });
     });
+  }
+
+  window.onload = initAuth0;
   </script>
 </body>
 </html>
