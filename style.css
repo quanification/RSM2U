@@ -82,16 +82,17 @@ textarea {
 
 /* --- Buttons --- */
 button {
-  background: #4CAF50;
+  background: #247c6b; /* logo teal */
   color: white;
   padding: 0.75em 1.5em;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  font-weight: bold;
 }
 
 button:hover {
-  background: #45a049;
+  background: #1d6657; /* slightly darker teal */
 }
 
 /* --- Centering Utility --- */
