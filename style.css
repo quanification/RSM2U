@@ -1,9 +1,9 @@
 .hero {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: left;
   padding: 2em;
-  text-align: center;
+  text-align: left;
 }
 
 .logo-title {
