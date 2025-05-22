@@ -26,41 +26,34 @@
   </main>
 
   <script>
-    let auth0 = null;
+  let auth0Client;
 
-    const configureClient = async () => {
-      auth0 = await createAuth0Client({
-        domain: "dev-snnjvf62qw1438rq.us.auth0.com",
-        client_id: "LetLfQ5N9xxeSu8mA6WpZkI9TeBZV7xM",
-        cacheLocation: "localstorage",
-        useRefreshTokens: true
+  async function initAuth0() {
+    auth0Client = await createAuth0Client({
+      domain: "dev-snnjvf62qw1438rq.us.auth0.com",
+      client_id: "LetLfQ5N9xxeSu8mA6WpZkI9TeBZV7xM",
+      cacheLocation: "localstorage"
+    });
+
+    const isAuthenticated = await auth0Client.isAuthenticated();
+
+    if (!isAuthenticated) {
+      window.location.href = "/";
+      return;
+    }
+
+    // Log Out handler
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", () => {
+        auth0Client.logout({
+          returnTo: window.location.origin
+        });
       });
-    };
+    }
+  }
 
-    window.onload = async () => {
-      await configureClient();
-
-      const isAuthenticated = await auth0.isAuthenticated();
-
-      if (!isAuthenticated) {
-        const query = window.location.search;
-        if (query.includes("code=") && query.includes("state=")) {
-          await auth0.handleRedirectCallback();
-          window.history.replaceState({}, document.title, "/members.html");
-        } else {
-          window.location.href = "/index.html";
-          return;
-        }
-      }
-
-      const user = await auth0.getUser();
-      document.getElementById("user-name").textContent = user.name || "Member";
-      document.getElementById("user-email").textContent = user.email;
-
-      document.getElementById("logout").addEventListener("click", () => {
-        auth0.logout({ returnTo: window.location.origin });
-      });
-    };
-  </script>
+  window.onload = initAuth0;
+</script>
 </body>
 </html>
