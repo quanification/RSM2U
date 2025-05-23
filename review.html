@@ -36,8 +36,8 @@
       .then(res => res.json())
       .then(result => {
         if (result.fee) {
-          const deliveryFee = parseFloat(result.fee);
-          const total = deliveryFee + data.tip;
+          const tip = parseFloat(data.tip || 0);
+          const total = deliveryFee + tip;
 
           document.getElementById("deliveryFee").textContent = deliveryFee.toFixed(2);
           document.getElementById("total").textContent = total.toFixed(2);
