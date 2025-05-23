@@ -125,14 +125,15 @@ textarea {
 
 .custom-tip-row {
   display: flex;
-  align-items: baseline; /* Also align this row properly */
+  align-items: baseline;
   gap: 0.5em;
+  margin-bottom: 1em;
 }
 
-.custom-tip-row input[type="number"] {
-  padding: 0.4em;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 150px;
+.custom-tip-row label {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35em;
+  font-weight: normal;
   font-size: 1rem;
 }
