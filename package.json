@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "nodemailer": "^6.9.4"
+    "nodemailer": "^6.9.4",
     "node-fetch": "^2.6.9",
     "stripe": "^12.0.0"
   }
