@@ -1,47 +1,54 @@
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const nodemailer = require("nodemailer");
 
-exports.handler = async function (event) {
-  const sig = event.headers["stripe-signature"];
-
-  let session;
+exports.handler = async (event) => {
   try {
-    session = stripe.webhooks.constructEvent(
-      event.body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET
-    );
-  } catch (err) {
-    console.error("⚠️ Webhook signature verification failed.", err.message);
+    const payload = JSON.parse(event.body);
+
+    if (payload.type === "checkout.session.completed") {
+      const session = payload.data.object;
+
+      // Set up the email transporter
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: "rsm2u.delivery@gmail.com",
+          pass: "epbu vqbv hqje jgfu" // NOT your Gmail login password — use an App Password
+        }
+      });
+
+      // Compose the email
+      const mailOptions = {
+        from: "rsm2u.delivery@gmail.com",
+        to: "rsm2u.delivery@gmail.com",
+        subject: "🛒 New Order Placed via RSM2U",
+        text: `
+A customer has completed payment!
+
+Email: ${session.customer_email}
+Amount Paid: $${(session.amount_total / 100).toFixed(2)}
+
+View the order in Stripe: https://dashboard.stripe.com/payments
+        `
+      };
+
+      // Send the email
+      await transporter.sendMail(mailOptions);
+
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ message: "Email sent successfully." })
+      };
+    }
+
     return {
-      statusCode: 400,
-      body: `Webhook Error: ${err.message}`,
+      statusCode: 200,
+      body: JSON.stringify({ message: "Event ignored." })
+    };
+  } catch (err) {
+    console.error("❌ Error:", err);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: "Internal Server Error" })
     };
   }
-
-  if (session.type === "checkout.session.completed") {
-    const customerEmail = session.data.object.customer_email;
-    const amount = (session.data.object.amount_total / 100).toFixed(2);
-
-    // Send email
-    const transporter = nodemailer.createTransport({
-      service: "gmail", // or use another email provider
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
-    await transporter.sendMail({
-      from: `"RSM2U Orders" <${process.env.EMAIL_USER}>`,
-      to: "youremail@example.com", // your email
-      subject: "✅ New Delivery Order Paid",
-      text: `A customer has placed a new order.\n\nEmail: ${customerEmail}\nAmount Paid: $${amount}`,
-    });
-  }
-
-  return {
-    statusCode: 200,
-    body: "Success",
-  };
 };
