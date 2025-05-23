@@ -108,3 +108,17 @@ textarea {
 .space-top {
   margin-top: 1.5em;
 }
+
+.tip-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.tip-option input[type="number"] {
+  flex: 1;
+  padding: 0.5em;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
