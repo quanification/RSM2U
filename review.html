@@ -35,18 +35,26 @@
       })
       .then(res => res.json())
       .then(result => {
-        if (result.fee) {
-          const tip = parseFloat(data.tip || 0);
-          const total = deliveryFee + tip;
+  let feeRaw = result.fee;
 
-          document.getElementById("deliveryFee").textContent = deliveryFee.toFixed(2);
-          document.getElementById("total").textContent = total.toFixed(2);
-          document.getElementById("pickupTime").textContent = data.pickupTime;
+  // Check if it's a string and convert to float if needed
+  const deliveryFee = typeof feeRaw === "string" ? parseFloat(feeRaw) : feeRaw;
+  const tip = parseFloat(data.tip || 0);
 
-          // Update localStorage with new values
-          data.deliveryFee = deliveryFee;
-          data.total = total;
-          localStorage.setItem("rsm2u_order", JSON.stringify(data));
+  if (isNaN(deliveryFee) || isNaN(tip)) {
+    throw new Error("Invalid fee or tip value.");
+  }
+
+  const total = deliveryFee + tip;
+
+  document.getElementById("deliveryFee").textContent = deliveryFee.toFixed(2);
+  document.getElementById("total").textContent = total.toFixed(2);
+  document.getElementById("pickupTime").textContent = data.pickupTime || "Not provided";
+
+  // Save updated data
+  data.deliveryFee = deliveryFee;
+  data.total = total;
+  localStorage.setItem("rsm2u_order", JSON.stringify(data));
         } else {
           throw new Error(result.error);
         }
