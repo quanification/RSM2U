@@ -44,28 +44,21 @@
       <input type="number" step="0.01" id="orderTotal" name="orderTotal" placeholder="e.g. 32.50" required />
 
       <fieldset>
-        <legend>Tip Amount</legend>
+  <legend>Tip Amount</legend>
 
-        <div class="tip-option">
-          <label><input type="radio" name="tipOption" value="0.1" /> 10%</label>
-        </div>
+  <div class="tip-row">
+    <label><input type="radio" name="tipOption" value="0.1"> 10%</label>
+    <label><input type="radio" name="tipOption" value="0.15"> 15%</label>
+    <label><input type="radio" name="tipOption" value="0.2"> 20%</label>
+  </div>
 
-        <div class="tip-option">
-          <label><input type="radio" name="tipOption" value="0.15" /> 15%</label>
-        </div>
-
-        <div class="tip-option">
-          <label><input type="radio" name="tipOption" value="0.2" /> 20%</label>
-        </div>
-
-        <div class="tip-option">
-          <label>
-            <input type="radio" name="tipOption" value="custom" id="customTipRadio" />
-            Custom Tip:
-          </label>
-          <input type="number" step="0.01" id="customTip" name="customTip" placeholder="Enter $ amount" disabled />
-        </div>
-      </fieldset>
+  <div class="custom-tip-row">
+    <label>
+      <input type="radio" name="tipOption" value="custom" id="customTipRadio"> Custom Tip:
+    </label>
+    <input type="number" step="0.01" id="customTip" name="customTip" placeholder="Enter $ amount" disabled>
+  </div>
+</fieldset>
 
       <button type="submit">Continue</button>
     </form>
