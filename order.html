@@ -110,11 +110,12 @@
       const deliveryFee = 5.0;
       const total = deliveryFee + tip;
 
-      const pickupTime = document.getElementById("pickupTime").value;
+      const pickupTimeSelect = document.getElementById("pickupTime");
+      const pickupTime = pickupTimeSelect.options[pickupTimeSelect.selectedIndex].value;
       
       const request = {
         email,
-        pickupTime: document.getElementById("pickupTime").value,
+        pickupTime,
         restaurant,
         dropoff,
         orderTotal,
