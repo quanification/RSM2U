@@ -62,72 +62,72 @@
   </main>
 
   <script>
-    const tipOptions = document.getElementsByName("tipOption");
-    const customTipInput = document.getElementById("customTip");
+  const tipOptions = document.getElementsByName("tipOption");
+  const customTipInput = document.getElementById("customTip");
 
-    tipOptions.forEach((tip) => {
-      tip.addEventListener("change", () => {
-        customTipInput.disabled = tip.value !== "custom";
-      });
+  tipOptions.forEach((tip) => {
+    tip.addEventListener("change", () => {
+      customTipInput.disabled = tip.value !== "custom";
+    });
+  });
+
+  let autocompleteRestaurant, autocompleteDropoff;
+  const restaurantInput = document.getElementById("restaurant");
+  const dropoffInput = document.getElementById("dropoff");
+
+  function initAutocomplete() {
+    autocompleteRestaurant = new google.maps.places.Autocomplete(restaurantInput, { types: ["establishment"], componentRestrictions: { country: "us" } });
+    autocompleteDropoff = new google.maps.places.Autocomplete(dropoffInput, { types: ["address"], componentRestrictions: { country: "us" } });
+
+    autocompleteRestaurant.addListener("place_changed", () => {
+      const place = autocompleteRestaurant.getPlace();
+      if (place && place.formatted_address) {
+        restaurantInput.value = place.formatted_address;
+      }
     });
 
-    let autocompleteRestaurant, autocompleteDropoff;
-    const restaurantInput = document.getElementById("restaurant");
-    const dropoffInput = document.getElementById("dropoff");
+    autocompleteDropoff.addListener("place_changed", () => {
+      const place = autocompleteDropoff.getPlace();
+      if (place && place.formatted_address) {
+        dropoffInput.value = place.formatted_address;
+      }
+    });
+  }
 
-    function initAutocomplete() {
-      autocompleteRestaurant = new google.maps.places.Autocomplete(restaurantInput, { types: ["establishment"], componentRestrictions: { country: "us" } });
-      autocompleteDropoff = new google.maps.places.Autocomplete(dropoffInput, { types: ["address"], componentRestrictions: { country: "us" } });
+  document.getElementById("order-form").addEventListener("submit", function (e) {
+    e.preventDefault();
 
-      autocompleteRestaurant.addListener("place_changed", () => {
-        const place = autocompleteRestaurant.getPlace();
-        if (place && place.formatted_address) {
-          restaurantInput.value = place.formatted_address;
-        }
-      });
+    const orderTotal = parseFloat(document.getElementById("orderTotal").value);
+    const restaurant = restaurantInput.value;
+    const dropoff = dropoffInput.value;
+    const pickupTime = document.getElementById("pickupTime").value; // ✅ get selected time string
+    const email = "QUANTSANG@HOTMAIL.COM"; // Placeholder email
+    const selectedTip = document.querySelector("input[name='tipOption']:checked");
 
-      autocompleteDropoff.addListener("place_changed", () => {
-        const place = autocompleteDropoff.getPlace();
-        if (place && place.formatted_address) {
-          dropoffInput.value = place.formatted_address;
-        }
-      });
+    let tip = 0;
+    if (selectedTip) {
+      tip = selectedTip.value === "custom" ? parseFloat(customTipInput.value) : orderTotal * parseFloat(selectedTip.value);
     }
 
-    document.getElementById("order-form").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const orderTotal = parseFloat(document.getElementById("orderTotal").value);
-      const restaurant = restaurantInput.value;
-      const dropoff = dropoffInput.value;
-      const email = "QUANTSANG@HOTMAIL.COM"; // Placeholder email
-      const selectedTip = document.querySelector("input[name='tipOption']:checked");
+    const deliveryFee = 5.0;
+    const total = deliveryFee + tip;
 
-      let tip = 0;
-      if (selectedTip) {
-        tip = selectedTip.value === "custom" ? parseFloat(customTipInput.value) : orderTotal * parseFloat(selectedTip.value);
-      }
+    const request = {
+      email,
+      pickupTime, // ✅ correctly stored as string
+      restaurant,
+      dropoff,
+      orderTotal,
+      deliveryFee,
+      tip,
+      total
+    };
 
-      const deliveryFee = 5.0;
-      const total = deliveryFee + tip;
-
-      const pickupTimeSelect = document.getElementById("pickupTime");
-      const pickupTime = pickupTimeSelect.options[pickupTimeSelect.selectedIndex].value;
-      
-      const request = {
-        email,
-        pickupTime,
-        restaurant,
-        dropoff,
-        orderTotal,
-        deliveryFee,
-        tip,
-        total
-      };
-
-      localStorage.setItem("rsm2u_order", JSON.stringify(request));
-      window.location.href = "review.html";
-    });
-  </script>
+    console.log("Saving to localStorage:", request); // ✅ debug output
+    localStorage.setItem("rsm2u_order", JSON.stringify(request));
+    window.location.href = "review.html";
+  });
+</script>
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDcIVNQtUTKU6LBmeF8b71473V_mkieoOw&libraries=places&callback=initAutocomplete" async defer></script>
 
 <script>
