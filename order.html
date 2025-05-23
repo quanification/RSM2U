@@ -52,11 +52,13 @@
     <label><input type="radio" name="tipOption" value="0.2"> 20%</label>
   </div>
 
-  <div style="display: flex; align-items: center; gap: 10px;">
-  <input type="radio" name="tip" id="customTipRadio" value="custom">
-  <label for="customTipRadio" style="white-space: nowrap;">Custom Tip:</label>
-  <input type="number" id="customTipAmount" name="customTipAmount" placeholder="Enter $" style="width: 100px;">
-  </div>
+  <div class="custom-tip-row">
+    <label>
+      <input type="radio" name="tip" value="custom" />
+      Custom Tip:
+    </label>
+    <input type="number" id="customTipInput" placeholder="Enter $ amount" />
+    </div>
 </fieldset>
 
       <button type="submit">Continue</button>
