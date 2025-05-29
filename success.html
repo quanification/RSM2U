@@ -12,6 +12,36 @@
     <p>Thank you! Your delivery request has been received and is now being processed.</p>
     <p>You’ll receive a confirmation shortly, and we’ll get in touch once a driver has been assigned to your order.</p>
     <a href="index.html"><button>Return to Home</button></a>
+
+    <!-- Hidden Formspree form -->
+    <form id="orderNotificationForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" style="display: none;">
+      <input type="hidden" name="email" />
+      <input type="hidden" name="pickupTime" />
+      <input type="hidden" name="restaurant" />
+      <input type="hidden" name="dropoff" />
+      <input type="hidden" name="orderTotal" />
+      <input type="hidden" name="tip" />
+      <input type="hidden" name="deliveryFee" />
+      <input type="hidden" name="total" />
+    </form>
   </main>
+
+  <script>
+    const order = JSON.parse(localStorage.getItem("rsm2u_order"));
+
+    if (order) {
+      const form = document.getElementById("orderNotificationForm");
+      form.email.value = order.email;
+      form.pickupTime.value = order.pickupTime;
+      form.restaurant.value = order.restaurant;
+      form.dropoff.value = order.dropoff;
+      form.orderTotal.value = `$${parseFloat(order.orderTotal).toFixed(2)}`;
+      form.tip.value = `$${parseFloat(order.tip).toFixed(2)}`;
+      form.deliveryFee.value = `$${parseFloat(order.deliveryFee).toFixed(2)}`;
+      form.total.value = `$${parseFloat(order.total).toFixed(2)}`;
+
+      form.submit(); // Automatically submit the form
+    }
+  </script>
 </body>
 </html>
