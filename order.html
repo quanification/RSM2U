@@ -152,6 +152,24 @@
       previewImg.src = "#";
     }
   });
-</script>  
+</script> 
+
+<script>
+  const screenshotInput = document.getElementById("screenshot");
+
+  screenshotInput.addEventListener("change", function () {
+    const file = this.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const base64Image = e.target.result;
+        const existingOrder = JSON.parse(localStorage.getItem("rsm2u_order")) || {};
+        existingOrder.imageData = base64Image;
+        localStorage.setItem("rsm2u_order", JSON.stringify(existingOrder));
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+</script>
 </body>
 </html>
