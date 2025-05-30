@@ -12,35 +12,50 @@
     <p>Thank you! Your delivery request has been received and is now being processed.</p>
     <p>You’ll receive a confirmation shortly, and we’ll get in touch once a driver has been assigned to your order.</p>
     <a href="index.html"><button>Return to Home</button></a>
-
-    <!-- Hidden Formspree form -->
-    <form id="orderNotificationForm" action="https://formspree.io/f/xanjwyqv" method="POST" style="display: none;">
-      <input type="hidden" name="email" />
-      <input type="hidden" name="pickupTime" />
-      <input type="hidden" name="restaurant" />
-      <input type="hidden" name="dropoff" />
-      <input type="hidden" name="orderTotal" />
-      <input type="hidden" name="tip" />
-      <input type="hidden" name="deliveryFee" />
-      <input type="hidden" name="total" />
-    </form>
   </main>
 
+  <!-- Hidden Formspree Form -->
+  <form id="formspreeForm" action="https://formspree.io/f/xanjwyqv" method="POST" enctype="multipart/form-data" style="display: none;">
+    <input type="hidden" name="email" />
+    <input type="hidden" name="restaurant" />
+    <input type="hidden" name="dropoff" />
+    <input type="hidden" name="pickupTime" />
+    <input type="hidden" name="orderTotal" />
+    <input type="hidden" name="tip" />
+    <input type="hidden" name="deliveryFee" />
+    <input type="hidden" name="total" />
+    <input type="file" name="screenshot" id="screenshotInput" />
+    <button type="submit">Submit</button>
+  </form>
+
   <script>
-    const order = JSON.parse(localStorage.getItem("rsm2u_order"));
+    const data = JSON.parse(localStorage.getItem("rsm2u_order"));
+    const form = document.getElementById("formspreeForm");
 
-    if (order) {
-      const form = document.getElementById("orderNotificationForm");
-      form.email.value = order.email;
-      form.pickupTime.value = order.pickupTime;
-      form.restaurant.value = order.restaurant;
-      form.dropoff.value = order.dropoff;
-      form.orderTotal.value = `$${parseFloat(order.orderTotal).toFixed(2)}`;
-      form.tip.value = `$${parseFloat(order.tip).toFixed(2)}`;
-      form.deliveryFee.value = `$${parseFloat(order.deliveryFee).toFixed(2)}`;
-      form.total.value = `$${parseFloat(order.total).toFixed(2)}`;
+    if (data) {
+      form.email.value = data.email;
+      form.restaurant.value = data.restaurant;
+      form.dropoff.value = data.dropoff;
+      form.pickupTime.value = data.pickupTime;
+      form.orderTotal.value = data.orderTotal;
+      form.tip.value = data.tip;
+      form.deliveryFee.value = data.deliveryFee;
+      form.total.value = data.total;
 
-      form.submit(); // Automatically submit the form
+      // If you're storing a file as base64 in localStorage
+      if (data.screenshotBase64) {
+        const blob = fetch(data.screenshotBase64)
+          .then(res => res.blob())
+          .then(blob => {
+            const file = new File([blob], "screenshot.png", { type: "image/png" });
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            document.getElementById("screenshotInput").files = dt.files;
+            form.submit();
+          });
+      } else {
+        form.submit(); // Submit without image if not present
+      }
     }
   </script>
 </body>
