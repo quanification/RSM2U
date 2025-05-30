@@ -30,34 +30,26 @@
   </form>
 
   <script>
-    const data = JSON.parse(localStorage.getItem("rsm2u_order"));
-    const form = document.getElementById("formspreeForm");
+  const data = JSON.parse(localStorage.getItem("rsm2u_order"));
+  const form = document.getElementById("formspreeForm");
 
-    if (data) {
-      form.email.value = data.email;
-      form.restaurant.value = data.restaurant;
-      form.dropoff.value = data.dropoff;
-      form.pickupTime.value = data.pickupTime;
-      form.orderTotal.value = data.orderTotal;
-      form.tip.value = data.tip;
-      form.deliveryFee.value = data.deliveryFee;
-      form.total.value = data.total;
+  // Prevent re-submission if already submitted
+  if (data && !data.submittedToFormspree) {
+    form.email.value = data.email;
+    form.restaurant.value = data.restaurant;
+    form.dropoff.value = data.dropoff;
+    form.pickupTime.value = data.pickupTime;
+    form.orderTotal.value = data.orderTotal;
+    form.tip.value = data.tip;
+    form.deliveryFee.value = data.deliveryFee;
+    form.total.value = data.total;
 
-      // If you're storing a file as base64 in localStorage
-      if (data.screenshotBase64) {
-        const blob = fetch(data.screenshotBase64)
-          .then(res => res.blob())
-          .then(blob => {
-            const file = new File([blob], "screenshot.png", { type: "image/png" });
-            const dt = new DataTransfer();
-            dt.items.add(file);
-            document.getElementById("screenshotInput").files = dt.files;
-            form.submit();
-          });
-      } else {
-        form.submit(); // Submit without image if not present
-      }
-    }
-  </script>
+    // Mark as submitted
+    data.submittedToFormspree = true;
+    localStorage.setItem("rsm2u_order", JSON.stringify(data));
+
+    form.submit();
+  }
+</script>
 </body>
 </html>
