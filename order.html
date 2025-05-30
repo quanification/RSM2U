@@ -47,7 +47,7 @@
           <label><input type="radio" name="tipOption" value="0.2"> 20%</label>
         </div>
         <div class="custom-tip-row">
-          <label><input type="radio" name="tip" value="custom" /> Custom Tip:</label>
+          <label><input type="radio" name="tipOption" value="custom" /> Custom Tip:</label>
           <input type="number" id="customTipInput" placeholder="Enter $ amount" />
         </div>
       </fieldset>
@@ -58,7 +58,7 @@
 
   <script>
   const tipOptions = document.getElementsByName("tipOption");
-  const customTipInput = document.getElementById("customTip");
+  const customTipInput = document.getElementById("customTipInput");
 
   tipOptions.forEach((tip) => {
     tip.addEventListener("change", () => {
