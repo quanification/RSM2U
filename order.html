@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,12 +18,22 @@
       flex-direction: column;
       gap: 0.5em;
     }
+    .tip-row,
+    .custom-tip-row {
+      display: flex;
+      align-items: center;
+      gap: 1em;
+      flex-wrap: wrap;
+    }
+    .custom-tip-row input[type="number"] {
+      width: 100px;
+    }
   </style>
 </head>
 <body>
   <main>
     <h1>📦 Place Your Delivery Request</h1>
-    <p>Please upload a screenshot of your order, provide the restaurant info, dropoff address, estimated pickup time, and your order total. We'll calculate delivery fees and tip next.</p>
+    <p>Provide the restaurant info, dropoff address, estimated pickup time, and your order total. We'll calculate delivery fees and tip next.</p>
 
     <form id="order-form">
       <label for="restaurant">Restaurant Name</label>
@@ -48,7 +57,7 @@
         </div>
         <div class="custom-tip-row">
           <label><input type="radio" name="tipOption" value="custom" /> Custom Tip:</label>
-          <input type="number" id="customTipInput" placeholder="Enter $ amount" />
+          <input type="number" id="customTipInput" placeholder="Enter $ amount" disabled />
         </div>
       </fieldset>
 
@@ -57,73 +66,74 @@
   </main>
 
   <script>
-  const tipOptions = document.getElementsByName("tipOption");
-  const customTipInput = document.getElementById("customTipInput");
+    const tipOptions = document.getElementsByName("tipOption");
+    const customTipInput = document.getElementById("customTipInput");
 
-  tipOptions.forEach((tip) => {
-    tip.addEventListener("change", () => {
-      customTipInput.disabled = tip.value !== "custom";
-    });
-  });
-
-  let autocompleteRestaurant, autocompleteDropoff;
-  const restaurantInput = document.getElementById("restaurant");
-  const dropoffInput = document.getElementById("dropoff");
-
-  function initAutocomplete() {
-    autocompleteRestaurant = new google.maps.places.Autocomplete(restaurantInput, { types: ["establishment"], componentRestrictions: { country: "us" } });
-    autocompleteDropoff = new google.maps.places.Autocomplete(dropoffInput, { types: ["address"], componentRestrictions: { country: "us" } });
-
-    autocompleteRestaurant.addListener("place_changed", () => {
-      const place = autocompleteRestaurant.getPlace();
-      if (place && place.formatted_address) {
-        restaurantInput.value = place.formatted_address;
-      }
+    tipOptions.forEach((tip) => {
+      tip.addEventListener("change", () => {
+        customTipInput.disabled = tip.value !== "custom";
+      });
     });
 
-    autocompleteDropoff.addListener("place_changed", () => {
-      const place = autocompleteDropoff.getPlace();
-      if (place && place.formatted_address) {
-        dropoffInput.value = place.formatted_address;
-      }
-    });
-  }
+    let autocompleteRestaurant, autocompleteDropoff;
+    const restaurantInput = document.getElementById("restaurant");
+    const dropoffInput = document.getElementById("dropoff");
 
-  document.getElementById("order-form").addEventListener("submit", function (e) {
-    e.preventDefault();
+    function initAutocomplete() {
+      autocompleteRestaurant = new google.maps.places.Autocomplete(restaurantInput, { types: ["establishment"], componentRestrictions: { country: "us" } });
+      autocompleteDropoff = new google.maps.places.Autocomplete(dropoffInput, { types: ["address"], componentRestrictions: { country: "us" } });
 
-    const orderTotal = parseFloat(document.getElementById("orderTotal").value);
-    const restaurant = restaurantInput.value;
-    const dropoff = dropoffInput.value;
-    const pickupTime = document.getElementById("pickupTime").value; // ✅ get selected time string
-    const email = "QUANTSANG@HOTMAIL.COM"; // Placeholder email
-    const selectedTip = document.querySelector("input[name='tipOption']:checked");
-    const customTipValue = parseFloat(customTipInput.value);
+      autocompleteRestaurant.addListener("place_changed", () => {
+        const place = autocompleteRestaurant.getPlace();
+        if (place && place.formatted_address) {
+          restaurantInput.value = place.formatted_address;
+        }
+      });
 
-    let tip = 0;
-    if (selectedTip) {
-      tip = selectedTip.value === "custom" ? parseFloat(customTipInput.value) : orderTotal * parseFloat(selectedTip.value);
+      autocompleteDropoff.addListener("place_changed", () => {
+        const place = autocompleteDropoff.getPlace();
+        if (place && place.formatted_address) {
+          dropoffInput.value = place.formatted_address;
+        }
+      });
     }
 
-    const deliveryFee = 5.0;
-    const total = deliveryFee + tip;
+    document.getElementById("order-form").addEventListener("submit", function (e) {
+      e.preventDefault();
 
-    const request = {
-      email,
-      pickupTime, // ✅ correctly stored as string
-      restaurant,
-      dropoff,
-      orderTotal,
-      deliveryFee,
-      tip,
-      total
-    };
+      const orderTotal = parseFloat(document.getElementById("orderTotal").value);
+      const restaurant = restaurantInput.value;
+      const dropoff = dropoffInput.value;
+      const pickupTime = document.getElementById("pickupTime").value;
+      const email = "QUANTSANG@HOTMAIL.COM"; // Placeholder
+      const selectedTip = document.querySelector("input[name='tipOption']:checked");
 
-    localStorage.setItem("rsm2u_order", JSON.stringify(request));
-    window.location.href = "review.html";
-  });
-</script>
+      let tip = 0;
+      if (selectedTip) {
+        tip = selectedTip.value === "custom"
+          ? parseFloat(customTipInput.value || "0")
+          : orderTotal * parseFloat(selectedTip.value);
+      }
+
+      const deliveryFee = 5.0;
+      const total = deliveryFee + tip;
+
+      const request = {
+        email,
+        pickupTime,
+        restaurant,
+        dropoff,
+        orderTotal,
+        deliveryFee,
+        tip,
+        total
+      };
+
+      localStorage.setItem("rsm2u_order", JSON.stringify(request));
+      window.location.href = "review.html";
+    });
+  </script>
+
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDcIVNQtUTKU6LBmeF8b71473V_mkieoOw&libraries=places&callback=initAutocomplete" async defer></script>
-
 </body>
 </html>
